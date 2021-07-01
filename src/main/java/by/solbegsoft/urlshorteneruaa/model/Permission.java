@@ -1,7 +1,7 @@
 package by.solbegsoft.urlshorteneruaa.model;
 
 public enum Permission {
-    LINK_READ("link:read"), LINK_WRITE("link:write"), LINK_DELETE("link:read");
+    LINK_READ("link:read"), LINK_WRITE("link:write"), LINK_DELETE("link:read"), ROLE_UPDATE("role:update");
 
     private final String permission;
 

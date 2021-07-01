@@ -4,7 +4,6 @@ import by.solbegsoft.urlshorteneruaa.security.JwtConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,8 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/login").permitAll()
-//                .antMatchers(HttpMethod.POST, "/user").permitAll()
-//                .antMatchers("/", "/{shortUrlKey}").permitAll()
+                .antMatchers("/api/v1/auth/reg").permitAll()
+                .antMatchers("/api/v1/user/activate").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
