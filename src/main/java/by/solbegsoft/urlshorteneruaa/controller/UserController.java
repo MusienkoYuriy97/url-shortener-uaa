@@ -37,9 +37,9 @@ public class UserController {
                              .build();
     }
 
-    @PostMapping("/{activateKey}")
-    public ResponseEntity<?> activate(@PathVariable String activateKey){
-        userService.activate(activateKey);
+    @PostMapping("/activate/{userId}/{activateKey}")
+    public ResponseEntity<?> activate(@PathVariable long userId, @PathVariable String activateKey){
+        userService.activate(userId, activateKey);
         return new ResponseEntity<>("Successful activate account.",
                 HttpStatus.ACCEPTED);
     }

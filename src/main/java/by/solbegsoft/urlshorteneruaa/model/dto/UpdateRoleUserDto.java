@@ -9,9 +9,8 @@ import javax.validation.constraints.Pattern;
 
 @Getter
 public class UpdateRoleUserDto {
-    @Min(1)
+    @Min(2)
     private long userId;
-    @NotNull @NotBlank
-    @Pattern(regexp = "^(ADMIN|USER)?")
+    @Pattern(regexp = "^(ADMIN|USER)")
     private String newRole;
 }

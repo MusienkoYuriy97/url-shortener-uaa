@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import static by.solbegsoft.urlshorteneruaa.model.Permission.*;
 
 public enum UserRole {
-    ADMIN(Set.of(LINK_DELETE, LINK_READ, LINK_WRITE, ROLE_UPDATE)),
-    USER(Set.of(LINK_READ, LINK_WRITE));
+    ADMIN(Set.of(ROLE_UPDATE)),
+    USER(Set.of());
 
     private final Set<Permission> permissions;
 

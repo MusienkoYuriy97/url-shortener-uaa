@@ -26,6 +26,8 @@ public class JwtTokenProvider {
     private long validityInMilliseconds;
     @Value("${jwt.header}")
     private String header;
+    @Value("${jwt.prefix}")
+    private String prefix;
 
     public JwtTokenProvider(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -41,7 +43,6 @@ public class JwtTokenProvider {
         claims.put("userRole", userRole);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds * 1000);
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -74,5 +75,9 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest request){
         return request.getHeader(header);
+    }
+
+    public String getPrefix() {
+        return prefix;
     }
 }

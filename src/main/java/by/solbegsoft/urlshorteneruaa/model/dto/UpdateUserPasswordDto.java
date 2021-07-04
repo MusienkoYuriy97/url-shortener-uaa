@@ -1,4 +1,5 @@
 package by.solbegsoft.urlshorteneruaa.model.dto;
+
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
