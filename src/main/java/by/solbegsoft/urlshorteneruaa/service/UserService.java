@@ -35,8 +35,8 @@ public class UserService {
     }
 
     public void updatePassword(User user, UpdateUserPasswordDto dto) {
-        if (user.getPassword().equals(dto.getOldPassword())
-                && dto.getNewPassword().equals(dto.getRepeatedPassword())){
+        boolean matchesOldPasswords = passwordEncoder.matches(dto.getOldPassword(),user.getPassword());
+        if (matchesOldPasswords && dto.getNewPassword().equals(dto.getRepeatedPassword())){
             user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
             userRepository.save(user);
         }else {
