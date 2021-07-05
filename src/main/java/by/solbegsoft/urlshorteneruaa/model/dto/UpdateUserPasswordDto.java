@@ -8,7 +8,9 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class UpdateUserPasswordDto {
     @NotNull @NotBlank
-    private String password;
+    private String oldPassword;
+    @NotNull @NotBlank
+    private String newPassword;
     @NotNull @NotBlank
     private String repeatedPassword;
 }

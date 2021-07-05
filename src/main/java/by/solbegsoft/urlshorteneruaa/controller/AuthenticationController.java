@@ -25,32 +25,35 @@ public class AuthenticationController {
     private EmailService emailService;
 
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService, EmailService emailService) {
+    public AuthenticationController(AuthenticationService authenticationService,
+                                    EmailService emailService) {
         this.authenticationService = authenticationService;
         this.emailService = emailService;
     }
 
     @PostMapping("/reg")
-    public ResponseEntity<?> create(@Valid @RequestBody UserCreateDto userCreateDto){
+    public ResponseEntity<?> save(@Valid @RequestBody UserCreateDto userCreateDto){
         User user = authenticationService.save(userCreateDto);
         String link = authenticationService.saveActivatedKey(user.getEmail());
         emailService.sendEmail(user.getEmail(),"activate account", link);
-        return new ResponseEntity<>("Successful added new user", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDto request, HttpServletResponse response){
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDto request,
+                                   HttpServletResponse response){
         try {
-            String token = authenticationService.getToken(request);
+            String token = authenticationService.login(request);
             response.addHeader("Authorization", token);
             return ResponseEntity.ok().build();
         }catch (AuthenticationException e){
-            return new ResponseEntity<>("Wrong email or password", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Wrong email or password.", HttpStatus.FORBIDDEN);
         }
     }
 
     @GetMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response){
+    public void logout(HttpServletRequest request,
+                       HttpServletResponse response){
         SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
         CookieClearingLogoutHandler cookieClearingLogoutHandler = new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY);
         cookieClearingLogoutHandler.logout(request, response, null);

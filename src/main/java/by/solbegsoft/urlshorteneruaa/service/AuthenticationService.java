@@ -80,7 +80,7 @@ public class AuthenticationService {
         }
     }
 
-    public String getToken(AuthenticationRequestDto dto) throws NoActivatedAccountException {
+    public String login(AuthenticationRequestDto dto) throws NoActivatedAccountException {
         Optional<User> user = userRepository
                 .getByEmail(dto.getEmail());
         if (user.isPresent() & user.get().getUserStatus().equals(BLOCKED)){

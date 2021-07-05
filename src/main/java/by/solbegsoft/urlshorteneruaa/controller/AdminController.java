@@ -1,7 +1,9 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
+import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.dto.UpdateRoleUserDto;
 import by.solbegsoft.urlshorteneruaa.service.AdminService;
+import by.solbegsoft.urlshorteneruaa.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +20,25 @@ import javax.validation.Valid;
 @RequestMapping(value = "${api.path.admin}")
 public class AdminController {
     private AdminService adminService;
+    private TokenService tokenService;
 
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService,
+                           TokenService tokenService) {
         this.adminService = adminService;
+        this.tokenService = tokenService;
     }
 
     @PutMapping("/update/role")
     @PreAuthorize("hasAuthority('role:update')")
-    public ResponseEntity<?> updateRole(@Valid @RequestBody UpdateRoleUserDto updateRoleUserDto, HttpServletRequest request){
-        String token = request.getHeader("Authorization");
-        System.out.println(token);
-        adminService.updateUserRole(token, updateRoleUserDto);
-        return new ResponseEntity<>("Role successfully changed", HttpStatus.ACCEPTED);
+    public ResponseEntity<?> updateRole(@Valid @RequestBody UpdateRoleUserDto dto,
+                                        HttpServletRequest request){
+        String bearerToken = request.getHeader("Authorization");
+        long currentUserId = tokenService.getUserByToken(bearerToken).getId();
+        if (currentUserId == dto.getUserId()){
+            return new ResponseEntity<>("You can't change the role for yourself", HttpStatus.CONFLICT);
+        }
+        User user = adminService.updateUserRole(dto);
+        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
     }
 }

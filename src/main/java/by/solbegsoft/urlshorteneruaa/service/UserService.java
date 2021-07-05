@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static by.solbegsoft.urlshorteneruaa.model.UserStatus.*;
 
@@ -25,32 +23,24 @@ import static by.solbegsoft.urlshorteneruaa.model.UserStatus.*;
 public class UserService {
     private UserRepository userRepository;
     private ActivateKeyRepository activateKeyRepository;
-    private JwtTokenProvider jwtTokenProvider;
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        ActivateKeyRepository activateKeyRepository,
-                       JwtTokenProvider jwtTokenProvider,
                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.activateKeyRepository = activateKeyRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void updatePassword(String token, UpdateUserPasswordDto dto) {
-        if (dto.getPassword().equals(dto.getRepeatedPassword())){
-
-            String email = jwtTokenProvider.getEmail(token);
-            Optional<User> byEmail = userRepository.getByEmail(email);
-            if (byEmail.isPresent()) {
-                User user = byEmail.get();
-                user.setPassword(passwordEncoder.encode(dto.getPassword()));
-                userRepository.save(user);
-            }
+    public void updatePassword(User user, UpdateUserPasswordDto dto) {
+        if (user.getPassword().equals(dto.getOldPassword())
+                && dto.getNewPassword().equals(dto.getRepeatedPassword())){
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+            userRepository.save(user);
         }else {
-            throw new UserDataException("Passwords not matching");
+            throw new UserDataException("Passwords entered incorrectly.");
         }
     }
 
@@ -69,10 +59,10 @@ public class UserService {
                 activateKeyRepository.deleteActivateKeyById(id);
             }else {
                 activateKeyRepository.deleteActivateKeyById(id);
-                throw new ActiveKeyNotValidException("Activate key is expired");
+                throw new ActiveKeyNotValidException("Activate key is expired.");
             }
         }else {
-            throw new ActiveKeyNotValidException("Active key not valid/user doesn't exist");
+            throw new ActiveKeyNotValidException("Active link not valid.");
         }
     }
 }

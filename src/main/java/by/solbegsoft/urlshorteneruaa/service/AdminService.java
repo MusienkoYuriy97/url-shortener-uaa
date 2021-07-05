@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class AdminService {
-    UserRepository userRepository;
-    JwtTokenProvider jwtTokenProvider;
+    private UserRepository userRepository;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     public AdminService(UserRepository userRepository,
@@ -25,25 +25,21 @@ public class AdminService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public User updateUserRole(String token, UpdateRoleUserDto dto) {
+    public User updateUserRole(UpdateRoleUserDto dto) {
         long userId = dto.getUserId();
         if (!userRepository.existsById(userId)){
-            log.warn("User with this id does not exist." + "Id:" +dto.getUserId());
+            log.warn("User with this id does not exist." + "Id:" +userId);
             throw new UserDataException("User with this id does not exist");
         }
-
-        String currentAdminEmail = jwtTokenProvider.getEmail(token);
-        User currentAdmin = userRepository.getByEmail(currentAdminEmail).get();
 
         User user = userRepository.getById(userId);
         String userRole = user.getUserRole().name();
         String newRole = dto.getNewRole();
-        boolean userNotCurrentAdmin = currentAdmin.getId() != userId;
 
-        if (userNotCurrentAdmin & !userRole.equals(newRole)){
+        if (!userRole.equals(newRole)){
             user.setUserRole(UserRole.valueOf(newRole));
-            log.info("User role was successfully update");
             userRepository.save(user);
+            log.info("User role was successfully update");
             return user;
         }else {
             log.warn("User already have role " + dto.getNewRole());

@@ -1,9 +1,8 @@
 package by.solbegsoft.urlshorteneruaa.security;
 
 import by.solbegsoft.urlshorteneruaa.exception.JwtAuthenticationException;
-import io.jsonwebtoken.lang.Strings;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
