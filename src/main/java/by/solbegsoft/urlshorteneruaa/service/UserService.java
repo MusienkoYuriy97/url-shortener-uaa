@@ -7,7 +7,6 @@ import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.dto.UpdateUserPasswordDto;
 import by.solbegsoft.urlshorteneruaa.repository.ActivateKeyRepository;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
-import by.solbegsoft.urlshorteneruaa.security.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +39,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
             userRepository.save(user);
         }else {
+            log.warn("Passwords entered incorrectly.");
             throw new UserDataException("Passwords entered incorrectly.");
         }
     }
@@ -59,9 +59,11 @@ public class UserService {
                 activateKeyRepository.deleteActivateKeyById(id);
             }else {
                 activateKeyRepository.deleteActivateKeyById(id);
+                log.warn("Activate key is expired. Now:" + now + " Expiration:"+expirationDate);
                 throw new ActiveKeyNotValidException("Activate key is expired.");
             }
         }else {
+            log.warn("Active link not valid. User id:" + userId + " key:" + key);
             throw new ActiveKeyNotValidException("Active link not valid.");
         }
     }
