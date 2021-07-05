@@ -4,6 +4,7 @@ import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.dto.AuthenticationRequestDto;
 import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
 import by.solbegsoft.urlshorteneruaa.service.AuthenticationService;
+import by.solbegsoft.urlshorteneruaa.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,16 +22,19 @@ import javax.validation.Valid;
 @RequestMapping(value = "${api.path.auth}")
 public class AuthenticationController {
     private AuthenticationService authenticationService;
+    private EmailService emailService;
 
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationController(AuthenticationService authenticationService, EmailService emailService) {
         this.authenticationService = authenticationService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/reg")
     public ResponseEntity<?> create(@Valid @RequestBody UserCreateDto userCreateDto){
         User user = authenticationService.save(userCreateDto);
-        authenticationService.setActivatedKey(user.getEmail());
+        String link = authenticationService.saveActivatedKey(user.getEmail());
+        emailService.sendEmail(user.getEmail(),"activate account", link);
         return new ResponseEntity<>("Successful added new user", HttpStatus.ACCEPTED);
     }
 

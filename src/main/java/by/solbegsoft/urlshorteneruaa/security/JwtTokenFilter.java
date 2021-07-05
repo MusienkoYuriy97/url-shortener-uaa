@@ -1,9 +1,13 @@
 package by.solbegsoft.urlshorteneruaa.security;
 
 import by.solbegsoft.urlshorteneruaa.exception.JwtAuthenticationException;
+import io.jsonwebtoken.lang.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -15,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class JwtTokenFilter extends GenericFilterBean {
     private final JwtTokenProvider jwtTokenProvider;
@@ -26,21 +31,29 @@ public class JwtTokenFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+        String bearerToken = jwtTokenProvider.resolveToken((HttpServletRequest) request);
 
+
+        if (bearerToken == null || !bearerToken.startsWith(jwtTokenProvider.getPrefix())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = bearerToken.replace(jwtTokenProvider.getPrefix(),"");
         try {
-            if (token != null && jwtTokenProvider.validateToken(token)){
+            if (jwtTokenProvider.validateToken(token)){
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 if (authentication != null){
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-        }catch (JwtAuthenticationException e){
+        }catch (JwtAuthenticationException | UsernameNotFoundException e){
             SecurityContextHolder.clearContext();
-            ((HttpServletResponse)response).sendError(e.getHttpStatus().value());
-            throw new JwtAuthenticationException("JWT token is expired or invalid");
+            ((HttpServletResponse)response).sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+            log.warn(e.getMessage());
+            return;
         }
+
         filterChain.doFilter(request, response);
     }
-
 }

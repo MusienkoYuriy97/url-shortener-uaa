@@ -25,10 +25,11 @@ public class AdminService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public void updateUserRole(String token, UpdateRoleUserDto updateRoleUserDto) {
-        long userId = updateRoleUserDto.getUserId();
+    public User updateUserRole(String token, UpdateRoleUserDto dto) {
+        long userId = dto.getUserId();
         if (!userRepository.existsById(userId)){
-            throw new RuntimeException("User with this id does not exist");
+            log.warn("User with this id does not exist." + "Id:" +dto.getUserId());
+            throw new UserDataException("User with this id does not exist");
         }
 
         String currentAdminEmail = jwtTokenProvider.getEmail(token);
@@ -36,19 +37,17 @@ public class AdminService {
 
         User user = userRepository.getById(userId);
         String userRole = user.getUserRole().name();
-        String newRole = updateRoleUserDto.getNewRole();
+        String newRole = dto.getNewRole();
         boolean userNotCurrentAdmin = currentAdmin.getId() != userId;
 
         if (userNotCurrentAdmin & !userRole.equals(newRole)){
             user.setUserRole(UserRole.valueOf(newRole));
+            log.info("User role was successfully update");
             userRepository.save(user);
+            return user;
         }else {
-            throw new UserDataException("User doesn't exist/ user already have this role");
+            log.warn("User already have role " + dto.getNewRole());
+            throw new UserDataException("User already have this role");
         }
-    }
-
-    public static void main(String[] args) {
-        UserRole role = UserRole.ADMIN;
-        System.out.println(role.name().equals("ADMIN"));
     }
 }

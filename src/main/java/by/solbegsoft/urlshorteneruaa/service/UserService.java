@@ -1,7 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.service;
 
-
-
+import by.solbegsoft.urlshorteneruaa.exception.ActiveKeyNotValidException;
 import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
@@ -15,12 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static by.solbegsoft.urlshorteneruaa.model.UserStatus.*;
-
 
 @Slf4j
 @Service
@@ -44,6 +41,7 @@ public class UserService {
 
     public void updatePassword(String token, UpdateUserPasswordDto dto) {
         if (dto.getPassword().equals(dto.getRepeatedPassword())){
+
             String email = jwtTokenProvider.getEmail(token);
             Optional<User> byEmail = userRepository.getByEmail(email);
             if (byEmail.isPresent()) {
@@ -58,9 +56,6 @@ public class UserService {
 
     public void activate(long userId, String key){
         User user = userRepository.getById(userId);
-        if (user == null){
-            throw new UserDataException("User doesn't exist");
-        }
 
         if (activateKeyRepository.existsByUserAndAndKey(user, key)){
             ActivateKey activateKey = activateKeyRepository.getByUser(user).get();
@@ -74,10 +69,10 @@ public class UserService {
                 activateKeyRepository.deleteActivateKeyById(id);
             }else {
                 activateKeyRepository.deleteActivateKeyById(id);
-                throw new RuntimeException("Activate key is expired");
+                throw new ActiveKeyNotValidException("Activate key is expired");
             }
         }else {
-            throw new RuntimeException("Active key not valid");
+            throw new ActiveKeyNotValidException("Active key not valid/user doesn't exist");
         }
     }
 }

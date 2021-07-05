@@ -1,6 +1,7 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
 import by.solbegsoft.urlshorteneruaa.model.dto.UpdateUserPasswordDto;
+import by.solbegsoft.urlshorteneruaa.service.EmailService;
 import by.solbegsoft.urlshorteneruaa.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,9 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EmailService emailService) {
         this.userService = userService;
+
     }
 
     @GetMapping("/home")
@@ -37,7 +39,7 @@ public class UserController {
                              .build();
     }
 
-    @PostMapping("/activate/{userId}/{activateKey}")
+    @GetMapping("/activate/{userId}/{activateKey}")
     public ResponseEntity<?> activate(@PathVariable long userId, @PathVariable String activateKey){
         userService.activate(userId, activateKey);
         return new ResponseEntity<>("Successful activate account.",

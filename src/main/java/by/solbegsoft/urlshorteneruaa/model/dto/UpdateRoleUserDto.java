@@ -1,13 +1,11 @@
 package by.solbegsoft.urlshorteneruaa.model.dto;
 
-import lombok.Getter;
+import lombok.Data;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-@Getter
+@Data
 public class UpdateRoleUserDto {
     @Min(2)
     private long userId;

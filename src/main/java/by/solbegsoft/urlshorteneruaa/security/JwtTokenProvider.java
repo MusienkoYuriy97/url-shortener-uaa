@@ -65,7 +65,8 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getEmail(String token){
+    public String getEmail(String bearerToken){
+        String token = bearerToken.replace(prefix,"");
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

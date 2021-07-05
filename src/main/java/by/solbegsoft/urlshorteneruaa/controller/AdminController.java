@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-
 @RestController
 @RequestMapping(value = "${api.path.admin}")
 public class AdminController {
@@ -29,6 +28,7 @@ public class AdminController {
     @PreAuthorize("hasAuthority('role:update')")
     public ResponseEntity<?> updateRole(@Valid @RequestBody UpdateRoleUserDto updateRoleUserDto, HttpServletRequest request){
         String token = request.getHeader("Authorization");
+        System.out.println(token);
         adminService.updateUserRole(token, updateRoleUserDto);
         return new ResponseEntity<>("Role successfully changed", HttpStatus.ACCEPTED);
     }
