@@ -18,11 +18,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
     }
 
 
+    //TODO
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository
                 .getByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User doesn't exist"));
-        return SecurityUser.fromUser(user);
+        return User.fromUser(user);
     }
 }

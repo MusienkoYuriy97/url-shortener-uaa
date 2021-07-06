@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "${api.path.user}")
+@RequestMapping(value = "${api.path}"+"user")
 public class UserController {
     private UserService userService;
     private TokenService tokenService;
@@ -33,19 +33,15 @@ public class UserController {
     }
 
     @PutMapping("/update/password")
-    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdateUserPasswordDto dto,
-                                            HttpServletRequest request){
-        String bearerToken = request.getHeader("Authorization");
-        User user = tokenService.getUserByToken(bearerToken);
-        userService.updatePassword(user, dto);
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdateUserPasswordDto dto){
+       // userService.updatePassword(user, dto);
         return ResponseEntity.ok()
                              .build();
     }
 
-    @GetMapping("/activate/{userId}/{activateKey}")
-    public ResponseEntity<?> activate(@PathVariable long userId,
-                                      @PathVariable String activateKey){
-        userService.activate(userId, activateKey);
+    @GetMapping("/{activateKey}")
+    public ResponseEntity<?> activate(@PathVariable String activateKey){
+        //userService.activate(userId, activateKey);
         return new ResponseEntity<>("Successful activate account.",
                 HttpStatus.ACCEPTED);
     }

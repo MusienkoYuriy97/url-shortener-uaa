@@ -24,6 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.jwtConfigurer = jwtConfigurer;
     }
 
+    //TODO
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -50,5 +51,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(12);
     }
-
 }

@@ -1,7 +1,5 @@
-package by.solbegsoft.urlshorteneruaa.controller;
+package by.solbegsoft.urlshorteneruaa.exception;
 
-import by.solbegsoft.urlshorteneruaa.exception.ActiveKeyNotValidException;
-import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class ExceptionController extends ResponseEntityExceptionHandler {
+public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserDataException.class)
     protected ResponseEntity<?> userData(Exception e) {
