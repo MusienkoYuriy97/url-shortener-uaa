@@ -19,8 +19,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<?> anyException(){
-        return new ResponseEntity<>("There might be a problem. Please, try again.", HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(NoActivatedAccountException.class)
+    protected ResponseEntity<?> noActivated(Exception e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 }

@@ -60,7 +60,7 @@ public class AuthenticationService {
         user.setLastName(userCreateDto.getLastName());
         user.setPassword(passwordEncoder.encode(userCreateDto.getPassword()));
         user.setEmail(userCreateDto.getEmail());
-        user.setUserRole(USER);
+        user.setUserRole(ROLE_USER);
         user.setUserStatus(BLOCKED);
         log.debug("Try save user " + user);
         User save = userRepository.save(user);
@@ -83,15 +83,14 @@ public class AuthenticationService {
     public String login(AuthenticationRequestDto dto) throws NoActivatedAccountException {
         Optional<User> user = userRepository
                 .getByEmail(dto.getEmail());
-        if (user.isPresent() & BLOCKED.equals(user.get().getUserStatus())){
-            log.warn("Account not active." + "Email:" + dto.getEmail());
-            throw new NoActivatedAccountException("Account not active");
-        }
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(),
-                dto.getPassword()));
-        String token = jwtTokenProvider.getPrefix() + jwtTokenProvider.createToken(dto.getEmail(),
-                user.get().getUserRole().name());
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(),dto.getPassword()));
+
+        String token = jwtTokenProvider.getPrefix() +
+                       jwtTokenProvider.createToken(user.get().getId().toString(),
+                                             user.get().getEmail(),
+                                             user.get().getUserRole().name());
+
         log.info("Successfully generate token for " + dto.getEmail());
         return token;
     }

@@ -19,14 +19,13 @@ import javax.validation.Valid;
 public class AdminController {
     private AdminService adminService;
 
-
     @Autowired
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
 
     @PutMapping("/role")
-    @PreAuthorize("hasAuthority('role:update')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateRole(@Valid @RequestBody UpdateRoleUserDto dto){
 //        String bearerToken = request.getHeader("Authorization");
 //        long currentUserId = tokenService.getUserByToken(bearerToken).getId();

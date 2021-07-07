@@ -24,7 +24,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.jwtConfigurer = jwtConfigurer;
     }
 
-    //TODO
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -32,9 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/auth/login").permitAll()
-                .antMatchers("/api/v1/auth/registration").permitAll()
-                .antMatchers("/api/v1/user/{activateKey}").permitAll()
+                .antMatchers(WhiteList.get()).permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
