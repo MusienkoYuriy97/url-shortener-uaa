@@ -7,7 +7,6 @@ import by.solbegsoft.urlshorteneruaa.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,11 +29,7 @@ public class AuthenticationController {
 
     @GetMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequestDto request){
-        try {
-            String token = authenticationService.login(request);
-            return new ResponseEntity<>(token, HttpStatus.OK);
-        }catch (AuthenticationException e){
-            return new ResponseEntity<>("Wrong email or password.", HttpStatus.FORBIDDEN);
-        }
+        String token = authenticationService.login(request);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 }

@@ -81,16 +81,17 @@ public class AuthenticationService {
     }
 
     public String login(AuthenticationRequestDto dto) throws NoActivatedAccountException {
-        Optional<User> user = userRepository
-                .getByEmail(dto.getEmail());
+        Optional<User> user = userRepository.getByEmail(dto.getEmail());
 
+        if (user.isPresent() && UserStatus.BLOCKED.equals(user.get().getUserStatus())){
+            log.warn("Account is BLOCKED.");
+            throw new NoActivatedAccountException("Account not active please ");
+        }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(),dto.getPassword()));
-
         String token = jwtTokenProvider.getPrefix() +
                        jwtTokenProvider.createToken(user.get().getId().toString(),
                                              user.get().getEmail(),
                                              user.get().getUserRole().name());
-
         log.info("Successfully generate token for " + dto.getEmail());
         return token;
     }

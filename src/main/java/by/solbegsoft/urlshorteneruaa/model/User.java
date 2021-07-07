@@ -61,15 +61,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return UserStatus.ACTIVE.equals(userStatus);
     }
-
-    public static UserDetails fromUser(User user){
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(), user.getPassword(),
-                user.getUserStatus().equals(UserStatus.ACTIVE),
-                user.getUserStatus().equals(UserStatus.ACTIVE),
-                user.getUserStatus().equals(UserStatus.ACTIVE),
-                user.getUserStatus().equals(UserStatus.ACTIVE),
-                Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name()))
-        );
-    }
 }

@@ -2,6 +2,7 @@ package by.solbegsoft.urlshorteneruaa.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -17,6 +18,11 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ActiveKeyNotValidException.class)
     protected ResponseEntity<?> activate(Exception e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    protected ResponseEntity<?> auth(Exception e) {
+        return new ResponseEntity<>("Wrong email/password", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(NoActivatedAccountException.class)

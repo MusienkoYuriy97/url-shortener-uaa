@@ -7,8 +7,10 @@ import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.dto.UpdateUserPasswordDto;
 import by.solbegsoft.urlshorteneruaa.repository.ActivateKeyRepository;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
+import by.solbegsoft.urlshorteneruaa.security.UserDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,21 +25,29 @@ public class UserService {
     private UserRepository userRepository;
     private ActivateKeyRepository activateKeyRepository;
     private PasswordEncoder passwordEncoder;
+    private UserDetailServiceImpl userDetailService;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        ActivateKeyRepository activateKeyRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       @Qualifier("userDetailsServiceImpl") UserDetailServiceImpl userDetailService) {
         this.userRepository = userRepository;
         this.activateKeyRepository = activateKeyRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userDetailService = userDetailService;
     }
 
-    public void updatePassword(User user, UpdateUserPasswordDto dto) {
-        boolean matchesOldPasswords = passwordEncoder.matches(dto.getOldPassword(),user.getPassword());
-        if (matchesOldPasswords && dto.getNewPassword().equals(dto.getRepeatedPassword())){
-            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-            userRepository.save(user);
+    public void updatePassword(UpdateUserPasswordDto dto) {
+        User currentUser = userDetailService.getCurrentUser();
+        log.debug("current user is " + currentUser.getEmail());
+
+        boolean matchesOldPasswords = passwordEncoder.matches(dto.getOldPassword(),
+                                                              currentUser.getPassword());
+        if (matchesOldPasswords
+                && dto.getNewPassword().equals(dto.getRepeatedPassword())){
+            currentUser.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+            userRepository.save(currentUser);
         }else {
             log.warn("Passwords entered incorrectly.");
             throw new UserDataException("Passwords entered incorrectly.");

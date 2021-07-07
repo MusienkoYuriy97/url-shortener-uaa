@@ -30,12 +30,12 @@ public class UserController {
 
     @PutMapping("/password")
     public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdateUserPasswordDto dto){
-       // userService.updatePassword(user, dto);
+        userService.updatePassword(dto);
         return ResponseEntity.ok()
                              .build();
     }
 
-    @GetMapping("/{activateKey}")
+    @GetMapping("/activate/{activateKey}")
     public ResponseEntity<?> activate(@PathVariable String activateKey){
         userService.activate(activateKey);
         return new ResponseEntity<>("Successful activate account.",
