@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -18,9 +19,9 @@ import java.util.Collections;
 @Table(name = "USERS")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     @JsonIgnore
-    private long id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String email;
