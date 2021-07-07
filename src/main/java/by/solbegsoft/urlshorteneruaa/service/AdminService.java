@@ -26,24 +26,25 @@ public class AdminService {
     }
 
     public User updateUserRole(UpdateRoleUserDto dto) {
-        long userId = dto.getUserId();
-        if (!userRepository.existsById(userId)){
-            log.warn("User with this id does not exist." + "Id:" +userId);
-            throw new UserDataException("User with this id does not exist");
-        }
-
-        User user = userRepository.getById(userId);
-        String userRole = user.getUserRole().name();
-        String newRole = dto.getNewRole();
-
-        if (!userRole.equals(newRole)){
-            user.setUserRole(UserRole.valueOf(newRole));
-            userRepository.save(user);
-            log.info("User role was successfully update");
-            return user;
-        }else {
-            log.warn("User already have role " + dto.getNewRole());
-            throw new UserDataException("User already have this role");
-        }
+//        long userId = dto.getUserId();
+//        if (!userRepository.existsById(userId)){
+//            log.warn("User with this id does not exist." + "Id:" +userId);
+//            throw new UserDataException("User with this id does not exist");
+//        }
+//
+//        User user = userRepository.getById(userId);
+//        String userRole = user.getUserRole().name();
+//        String newRole = dto.getNewRole();
+//
+//        if (!userRole.equals(newRole)){
+//            user.setUserRole(UserRole.valueOf(newRole));
+//            userRepository.save(user);
+//            log.info("User role was successfully update");
+//            return user;
+//        }else {
+//            log.warn("User already have role " + dto.getNewRole());
+//            throw new UserDataException("User already have this role");
+//        }
+        return null;
     }
 }

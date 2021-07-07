@@ -44,27 +44,22 @@ public class UserService {
         }
     }
 
-    public void activate(long userId, String key){
-        User user = userRepository.getById(userId);
-
-        if (activateKeyRepository.existsByUserAndAndKey(user, key)){
-            ActivateKey activateKey = activateKeyRepository.getByUser(user).get();
-            long id = activateKey.getId();
+    public void activate(String key){
+        if (activateKeyRepository.existsByKey(key)) {
+            ActivateKey activateKey = activateKeyRepository.getByKey(key).get();
+            User user = activateKey.getUser();
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime expirationDate = activateKey.getExpirationDate();
 
-            if (expirationDate.isAfter(now)){
-                user.setUserStatus(ACTIVE);
-                userRepository.save(user);
-                activateKeyRepository.deleteActivateKeyById(id);
-            }else {
-                activateKeyRepository.deleteActivateKeyById(id);
-                log.warn("Activate key is expired. Now:" + now + " Expiration:"+expirationDate);
+            if (now.isAfter(expirationDate)){
+                activateKeyRepository.deleteActivateKeyByKey(key);
                 throw new ActiveKeyNotValidException("Activate key is expired.");
             }
+            user.setUserStatus(ACTIVE);
+            userRepository.save(user);
+            activateKeyRepository.deleteActivateKeyByKey(key);
         }else {
-            log.warn("Active link not valid. User id:" + userId + " key:" + key);
-            throw new ActiveKeyNotValidException("Active link not valid.");
+            throw new ActiveKeyNotValidException("Activate key not valid.");
         }
     }
 }

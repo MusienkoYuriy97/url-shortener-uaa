@@ -25,8 +25,6 @@ public class AuthenticationController {
     @PostMapping("/registration")
     public ResponseEntity<?> save(@Valid @RequestBody UserCreateDto userCreateDto){
         User user = authenticationService.save(userCreateDto);
-        String link = authenticationService.saveActivatedKey(user.getEmail());
-        //emailService.sendEmail(user.getEmail(),"activate account", link);
         return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
     }
 

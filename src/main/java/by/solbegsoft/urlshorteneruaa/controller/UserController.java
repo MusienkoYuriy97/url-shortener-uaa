@@ -1,8 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
-import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.dto.UpdateUserPasswordDto;
-import by.solbegsoft.urlshorteneruaa.service.TokenService;
 import by.solbegsoft.urlshorteneruaa.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Slf4j
@@ -18,13 +15,11 @@ import javax.validation.Valid;
 @RequestMapping(value = "${api.path}"+"user")
 public class UserController {
     private UserService userService;
-    private TokenService tokenService;
+
 
     @Autowired
-    public UserController(UserService userService,
-                          TokenService tokenService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.tokenService = tokenService;
     }
 
     @GetMapping("/home")
@@ -41,7 +36,7 @@ public class UserController {
 
     @GetMapping("/{activateKey}")
     public ResponseEntity<?> activate(@PathVariable String activateKey){
-        //userService.activate(userId, activateKey);
+        userService.activate(activateKey);
         return new ResponseEntity<>("Successful activate account.",
                 HttpStatus.ACCEPTED);
     }

@@ -5,6 +5,7 @@ import by.solbegsoft.urlshorteneruaa.exception.NoActivatedAccountException;
 import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
+import by.solbegsoft.urlshorteneruaa.model.UserStatus;
 import by.solbegsoft.urlshorteneruaa.model.dto.AuthenticationRequestDto;
 import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
 import by.solbegsoft.urlshorteneruaa.repository.ActivateKeyRepository;
@@ -32,18 +33,21 @@ public class AuthenticationService {
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
     private JwtTokenProvider jwtTokenProvider;
+    private EmailService emailService;
 
     @Autowired
     public AuthenticationService(UserRepository userRepository,
                                  ActivateKeyRepository activateKeyRepository,
                                  PasswordEncoder passwordEncoder,
                                  AuthenticationManager authenticationManager,
-                                 JwtTokenProvider jwtTokenProvider) {
+                                 JwtTokenProvider jwtTokenProvider,
+                                 EmailService emailService) {
         this.userRepository = userRepository;
         this.activateKeyRepository = activateKeyRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.emailService = emailService;
     }
 
     public User save(UserCreateDto userCreateDto){
@@ -61,29 +65,25 @@ public class AuthenticationService {
         log.debug("Try save user " + user);
         User save = userRepository.save(user);
         log.debug("Saved user " + save);
+        String email = user.getEmail();
+        emailService.sendEmail(email,user.getFirstName(), saveActivateKey(email));
         return save;
     }
 
-    public String saveActivatedKey(String email){
-        if (userRepository.existsByEmail(email)){
-            User user = userRepository.getByEmail(email).get();
-            ActivateKey activateKey = new ActivateKey();
-            activateKey.setKey(StringGenerator.generate(12));
-            activateKey.setUser(user);
-
-            ActivateKey save = activateKeyRepository.save(activateKey);
-            log.info("Successfully added activated key for " + user.getEmail());
-            return createLink(save.getUser().getId(), save.getKey());
-        }else {
-            log.warn("User doesn't exist. Email:" + email);
-            throw new UserDataException("User doesn't exist");
-        }
+    private String saveActivateKey(String email){
+        User user = userRepository.getByEmail(email).get();
+        ActivateKey activateKey = new ActivateKey();
+        activateKey.setKey(StringGenerator.generate(12));
+        activateKey.setUser(user);
+        ActivateKey save = activateKeyRepository.save(activateKey);
+        log.info("Successfully added activated key for " + user.getEmail());
+        return save.getKey();
     }
 
     public String login(AuthenticationRequestDto dto) throws NoActivatedAccountException {
         Optional<User> user = userRepository
                 .getByEmail(dto.getEmail());
-        if (user.isPresent() & user.get().getUserStatus().equals(BLOCKED)){
+        if (user.isPresent() & BLOCKED.equals(user.get().getUserStatus())){
             log.warn("Account not active." + "Email:" + dto.getEmail());
             throw new NoActivatedAccountException("Account not active");
         }
@@ -94,17 +94,5 @@ public class AuthenticationService {
                 user.get().getUserRole().name());
         log.info("Successfully generate token for " + dto.getEmail());
         return token;
-    }
-
-    private String createLink(long userId, String key){
-        StringBuilder link = new StringBuilder();
-        link
-                .append("<a href=\"")
-                .append("http://localhost:8080/api/v1/user/activate/")
-                .append(userId)
-                .append("/")
-                .append(key)
-                .append("\">click on the link to activate your account</a>");
-        return String.valueOf(link);
     }
 }
