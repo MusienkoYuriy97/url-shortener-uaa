@@ -5,12 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.UUID;
 
 @Entity
@@ -32,32 +30,32 @@ public class User implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     private UserRole userRole;
 
-    @Override
+    @JsonIgnore @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return userRole.getAuthorities();
     }
 
-    @Override
+    @JsonIgnore @Override
     public String getUsername() {
         return email;
     }
 
-    @Override
+    @JsonIgnore @Override
     public boolean isAccountNonExpired() {
         return UserStatus.ACTIVE.equals(userStatus);
     }
 
-    @Override
+    @JsonIgnore @Override
     public boolean isAccountNonLocked() {
         return UserStatus.ACTIVE.equals(userStatus);
     }
 
-    @Override
+    @JsonIgnore @Override
     public boolean isCredentialsNonExpired() {
         return UserStatus.ACTIVE.equals(userStatus);
     }
 
-    @Override
+    @JsonIgnore @Override
     public boolean isEnabled() {
         return UserStatus.ACTIVE.equals(userStatus);
     }

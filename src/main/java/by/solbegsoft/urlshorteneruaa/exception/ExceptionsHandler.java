@@ -15,14 +15,14 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(ActiveKeyNotValidException.class)
-    protected ResponseEntity<?> activate(Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(AuthenticationException.class)
     protected ResponseEntity<?> auth(Exception e) {
         return new ResponseEntity<>("Wrong email/password", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ActiveKeyNotValidException.class)
+    protected ResponseEntity<?> activate(Exception e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(NoActivatedAccountException.class)

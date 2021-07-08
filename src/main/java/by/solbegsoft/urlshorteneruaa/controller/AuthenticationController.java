@@ -7,6 +7,7 @@ import by.solbegsoft.urlshorteneruaa.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,10 +25,11 @@ public class AuthenticationController {
     @PostMapping("/registration")
     public ResponseEntity<?> save(@Valid @RequestBody UserCreateDto userCreateDto){
         User user = authenticationService.save(userCreateDto);
-        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @GetMapping("/login")
+    @PreAuthorize("!isAuthenticated()")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequestDto request){
         String token = authenticationService.login(request);
         return new ResponseEntity<>(token, HttpStatus.OK);

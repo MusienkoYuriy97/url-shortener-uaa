@@ -31,8 +31,7 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdateUserPasswordDto dto){
         userService.updatePassword(dto);
-        return ResponseEntity.ok()
-                             .build();
+        return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
     }
 
     @GetMapping("/activate/{activateKey}")
