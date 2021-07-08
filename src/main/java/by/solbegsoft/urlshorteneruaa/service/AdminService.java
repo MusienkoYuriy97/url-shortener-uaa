@@ -5,7 +5,6 @@ import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.UserRole;
 import by.solbegsoft.urlshorteneruaa.model.dto.UpdateRoleUserDto;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
-import by.solbegsoft.urlshorteneruaa.security.JwtTokenProvider;
 import by.solbegsoft.urlshorteneruaa.security.UserDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,8 +3,7 @@ package by.solbegsoft.urlshorteneruaa.service;
 import by.solbegsoft.urlshorteneruaa.common.StringGenerator;
 import by.solbegsoft.urlshorteneruaa.exception.NoActivatedAccountException;
 import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
-import by.solbegsoft.urlshorteneruaa.mapper.UserRequestMapper;
-import by.solbegsoft.urlshorteneruaa.mapper.UserResponseMapper;
+import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.UserStatus;
@@ -18,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,24 +31,24 @@ import static by.solbegsoft.urlshorteneruaa.model.UserStatus.BLOCKED;
 public class AuthenticationService {
     private UserRepository userRepository;
     private ActivateKeyRepository activateKeyRepository;
-    private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
     private JwtTokenProvider jwtTokenProvider;
     private EmailService emailService;
+    private UserMapper userMapper;
 
     @Autowired
     public AuthenticationService(UserRepository userRepository,
                                  ActivateKeyRepository activateKeyRepository,
-                                 PasswordEncoder passwordEncoder,
                                  AuthenticationManager authenticationManager,
                                  JwtTokenProvider jwtTokenProvider,
-                                 EmailService emailService) {
+                                 EmailService emailService,
+                                 UserMapper userMapper) {
         this.userRepository = userRepository;
         this.activateKeyRepository = activateKeyRepository;
-        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.emailService = emailService;
+        this.userMapper = userMapper;
     }
 
     public UserResponseDto save(UserCreateDto userCreateDto){
@@ -58,8 +56,7 @@ public class AuthenticationService {
             log.warn("User with this email already exist");
             throw new UserDataException("User with this email already exist");
         }
-        User user = UserRequestMapper.INSTANCE.toUser(userCreateDto);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user = userMapper.toUser(userCreateDto);
         user.setUserRole(ROLE_USER);
         user.setUserStatus(BLOCKED);
         log.debug("Try save user " + user);
@@ -67,7 +64,7 @@ public class AuthenticationService {
         log.debug("Saved user " + savedUser);
         String email = savedUser.getEmail();
         emailService.sendEmail(email, savedUser.getFirstName(), saveActivateKey(email));
-        UserResponseDto userResponseDto = UserResponseMapper.INSTANCE.toDto(savedUser);
+        UserResponseDto userResponseDto = userMapper.toDto(savedUser);
         return userResponseDto;
     }
 

@@ -2,14 +2,12 @@ package by.solbegsoft.urlshorteneruaa.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
@@ -20,14 +18,13 @@ import java.util.Map;
 @Service
 public class EmailService {
     public static final String EMAIL_VERIFICATION_TEMPLATE = "email";
-    public static final String TEMPLATE_VARIABLE_EMAIL = "email";
     public static final String TEMPLATE_VARIABLE_NAME = "name";
     public static final String TEMPLATE_VARIABLE_TOKEN = "token";
     public static final String TEMPLATE_VARIABLE_HOST = "host";
 
     public static final String EMAIL_FROM = "yury.musienko@solbeg.com";
     public static final String EMAIL_SUBJECT_ACTIVATION_LINK   = "Activation Link";
-    public static final String HOST = "http://localhost:8080/api/v1/user/";
+    public static final String HOST = "http://localhost:8080/api/v1/user/activate/";
 
     private JavaMailSender javaMailSender;
     private TemplateEngine templateEngine;
