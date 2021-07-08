@@ -18,44 +18,42 @@ import java.util.UUID;
 public class User implements UserDetails {
     @Id
     @GeneratedValue
-    @JsonIgnore
     private UUID id;
     private String firstName;
     private String lastName;
     private String email;
-    @JsonIgnore
     private String password;
     @Enumerated(value = EnumType.STRING)
     private UserStatus userStatus;
     @Enumerated(value = EnumType.STRING)
     private UserRole userRole;
 
-    @JsonIgnore @Override
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return userRole.getAuthorities();
     }
 
-    @JsonIgnore @Override
+    @Override
     public String getUsername() {
         return email;
     }
 
-    @JsonIgnore @Override
+    @Override
     public boolean isAccountNonExpired() {
         return UserStatus.ACTIVE.equals(userStatus);
     }
 
-    @JsonIgnore @Override
+    @Override
     public boolean isAccountNonLocked() {
         return UserStatus.ACTIVE.equals(userStatus);
     }
 
-    @JsonIgnore @Override
+    @Override
     public boolean isCredentialsNonExpired() {
         return UserStatus.ACTIVE.equals(userStatus);
     }
 
-    @JsonIgnore @Override
+    @Override
     public boolean isEnabled() {
         return UserStatus.ACTIVE.equals(userStatus);
     }

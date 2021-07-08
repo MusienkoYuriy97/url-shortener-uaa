@@ -3,11 +3,14 @@ package by.solbegsoft.urlshorteneruaa.service;
 import by.solbegsoft.urlshorteneruaa.common.StringGenerator;
 import by.solbegsoft.urlshorteneruaa.exception.NoActivatedAccountException;
 import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
+import by.solbegsoft.urlshorteneruaa.mapper.UserRequestMapper;
+import by.solbegsoft.urlshorteneruaa.mapper.UserResponseMapper;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.UserStatus;
 import by.solbegsoft.urlshorteneruaa.model.dto.AuthenticationRequestDto;
 import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
+import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
 import by.solbegsoft.urlshorteneruaa.repository.ActivateKeyRepository;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.JwtTokenProvider;
@@ -50,24 +53,22 @@ public class AuthenticationService {
         this.emailService = emailService;
     }
 
-    public User save(UserCreateDto userCreateDto){
+    public UserResponseDto save(UserCreateDto userCreateDto){
         if (userRepository.existsByEmail(userCreateDto.getEmail())) {
             log.warn("User with this email already exist");
             throw new UserDataException("User with this email already exist");
         }
-        User user = new User();
-        user.setFirstName(userCreateDto.getFirstName());
-        user.setLastName(userCreateDto.getLastName());
-        user.setPassword(passwordEncoder.encode(userCreateDto.getPassword()));
-        user.setEmail(userCreateDto.getEmail());
+        User user = UserRequestMapper.INSTANCE.toUser(userCreateDto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUserRole(ROLE_USER);
         user.setUserStatus(BLOCKED);
         log.debug("Try save user " + user);
-        User save = userRepository.save(user);
-        log.debug("Saved user " + save);
-        String email = user.getEmail();
-        emailService.sendEmail(email,user.getFirstName(), saveActivateKey(email));
-        return save;
+        User savedUser = userRepository.save(user);
+        log.debug("Saved user " + savedUser);
+        String email = savedUser.getEmail();
+        emailService.sendEmail(email, savedUser.getFirstName(), saveActivateKey(email));
+        UserResponseDto userResponseDto = UserResponseMapper.INSTANCE.toDto(savedUser);
+        return userResponseDto;
     }
 
     private String saveActivateKey(String email){
@@ -85,7 +86,7 @@ public class AuthenticationService {
 
         if (user.isPresent() && UserStatus.BLOCKED.equals(user.get().getUserStatus())){
             log.warn("Account is BLOCKED.");
-            throw new NoActivatedAccountException("Account not active please ");
+            throw new NoActivatedAccountException("Account not active.");
         }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(),dto.getPassword()));
         String token = jwtTokenProvider.getPrefix() +

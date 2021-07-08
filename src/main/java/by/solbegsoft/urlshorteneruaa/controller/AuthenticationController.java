@@ -1,8 +1,8 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
-import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.dto.AuthenticationRequestDto;
 import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
+import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
 import by.solbegsoft.urlshorteneruaa.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> save(@Valid @RequestBody UserCreateDto userCreateDto){
-        User user = authenticationService.save(userCreateDto);
+        UserResponseDto user = authenticationService.save(userCreateDto);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
