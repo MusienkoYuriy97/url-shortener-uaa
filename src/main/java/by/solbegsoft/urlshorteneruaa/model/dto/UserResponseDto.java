@@ -1,15 +1,8 @@
 package by.solbegsoft.urlshorteneruaa.model.dto;
 
-import by.solbegsoft.urlshorteneruaa.model.UserRole;
-import by.solbegsoft.urlshorteneruaa.model.UserStatus;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter
 public class UserResponseDto {
     private String firstName;
     private String lastName;

@@ -1,8 +1,9 @@
 package by.solbegsoft.urlshorteneruaa.model.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter @Setter
 public class AuthenticationRequestDto {
     private String email;
     private String password;
