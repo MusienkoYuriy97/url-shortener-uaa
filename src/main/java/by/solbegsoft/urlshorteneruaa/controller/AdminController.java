@@ -2,6 +2,7 @@ package by.solbegsoft.urlshorteneruaa.controller;
 
 import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.dto.UpdateRoleUserDto;
+import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
 import by.solbegsoft.urlshorteneruaa.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class AdminController {
         if (adminService.isCurrentAdmin(dto.getEmail())){
             return new ResponseEntity<>("You can't change the role for yourself", HttpStatus.CONFLICT);
         }
-        User user = adminService.updateUserRole(dto);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        UserResponseDto response = adminService.updateUserRole(dto);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

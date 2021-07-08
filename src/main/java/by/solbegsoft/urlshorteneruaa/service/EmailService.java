@@ -38,14 +38,13 @@ public class EmailService {
     }
 
     public void sendEmail(String to, String fullName, String activationKey){
-
         try {
             Map<String, Object> variables = new HashMap<>();
             variables.put(TEMPLATE_VARIABLE_NAME, fullName);
             variables.put(TEMPLATE_VARIABLE_TOKEN, activationKey);
             variables.put(TEMPLATE_VARIABLE_HOST, HOST);
 
-            String body = buildTemplate(EMAIL_VERIFICATION_TEMPLATE, variables);
+            String body = buildTemplate(variables);
 
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
@@ -62,9 +61,9 @@ public class EmailService {
 
     }
 
-    private String buildTemplate(String template, Map<String, Object> variables){
+    private String buildTemplate(Map<String, Object> variables){
         Context context = new Context();
         context.setVariables(variables);
-        return templateEngine.process(template, context);
+        return templateEngine.process(EmailService.EMAIL_VERIFICATION_TEMPLATE, context);
     }
 }

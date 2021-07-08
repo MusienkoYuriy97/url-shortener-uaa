@@ -1,9 +1,11 @@
 package by.solbegsoft.urlshorteneruaa.service;
 
 import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
+import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.model.UserRole;
 import by.solbegsoft.urlshorteneruaa.model.dto.UpdateRoleUserDto;
+import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.UserDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -18,15 +20,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminService {
     private UserRepository userRepository;
     private UserDetailServiceImpl userDetailService;
+    private UserMapper userMapper;
 
     @Autowired
     public AdminService(UserRepository userRepository,
-                        @Qualifier("userDetailsServiceImpl") UserDetailServiceImpl userDetailService) {
+                        @Qualifier("userDetailsServiceImpl") UserDetailServiceImpl userDetailService,
+                        UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userDetailService = userDetailService;
+        this.userMapper = userMapper;
     }
 
-    public User updateUserRole(UpdateRoleUserDto dto) {
+    public UserResponseDto updateUserRole(UpdateRoleUserDto dto) {
         String email = dto.getEmail();
 
         if (!userRepository.existsByEmail(email)){
@@ -42,7 +47,7 @@ public class AdminService {
             user.setUserRole(UserRole.valueOf(newRole));
             User save = userRepository.save(user);
             log.info("User role was successfully update");
-            return save;
+            return userMapper.toDto(save);
         }else {
             log.warn("User already have role " + dto.getNewRole());
             throw new UserDataException("User already have this role");

@@ -2,6 +2,7 @@ package by.solbegsoft.urlshorteneruaa.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.UUID;
 
+@Builder
 @Entity
 @Data
 @AllArgsConstructor @NoArgsConstructor
