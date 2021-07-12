@@ -4,7 +4,7 @@ values (
         'Yuriy',
         'Musienko',
         '$2y$12$QKQ2d03.6SCPEQhLlaZusOJT9Q/ODqnvFHT6JCdpqvxKeXHa7KviG',
-        'ADMIN',
+        'ROLE_ADMIN',
         'ACTIVE'
         ),
        (
@@ -12,6 +12,6 @@ values (
            'Pavel',
            'Pavlov',
            '$2y$12$QKQ2d03.6SCPEQhLlaZusOJT9Q/ODqnvFHT6JCdpqvxKeXHa7KviG',
-           'USER',
+           'ROLE_USER',
            'ACTIVE'
        );

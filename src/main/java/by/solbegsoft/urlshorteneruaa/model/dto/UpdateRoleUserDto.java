@@ -1,14 +1,14 @@
 package by.solbegsoft.urlshorteneruaa.model.dto;
 
-import lombok.Data;
 
-import javax.validation.constraints.Min;
+import lombok.Getter;
+import lombok.Setter;
 import javax.validation.constraints.Pattern;
 
-@Data
+@Getter @Setter
 public class UpdateRoleUserDto {
-    @Min(2)
-    private long userId;
-    @Pattern(regexp = "^(ADMIN|USER)")
+    @Pattern(regexp = "\\b[a-zA-Z0-9._%-]+@[a-zA-Z]+\\.[a-zA-Z]{2,3}\\b")
+    private String email;
+    @Pattern(regexp = "^(ROLE_ADMIN|ROLE_USER)")
     private String newRole;
 }
