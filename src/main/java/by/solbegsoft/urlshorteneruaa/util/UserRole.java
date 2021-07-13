@@ -1,4 +1,4 @@
-package by.solbegsoft.urlshorteneruaa.model;
+package by.solbegsoft.urlshorteneruaa.util;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

@@ -1,6 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
-import by.solbegsoft.urlshorteneruaa.model.dto.UpdateUserPasswordDto;
+import by.solbegsoft.urlshorteneruaa.dto.UpdateUserPasswordDto;
 import by.solbegsoft.urlshorteneruaa.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "${api.path}"+"user")
+@RequestMapping(value = "${api.path}"+"/user")
 public class UserController {
     private UserService userService;
 
@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdateUserPasswordDto dto){
-        userService.updatePassword(dto);
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdateUserPasswordDto updateUserPasswordDto){
+        userService.updatePassword(updateUserPasswordDto);
         return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
     }
 

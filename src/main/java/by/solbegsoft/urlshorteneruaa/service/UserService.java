@@ -4,28 +4,34 @@ import by.solbegsoft.urlshorteneruaa.exception.ActiveKeyNotValidException;
 import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.dto.UpdateUserPasswordDto;
+import by.solbegsoft.urlshorteneruaa.dto.UpdateUserPasswordDto;
 import by.solbegsoft.urlshorteneruaa.repository.ActivateKeyRepository;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.UserDetailServiceImpl;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
 
-import static by.solbegsoft.urlshorteneruaa.model.UserStatus.*;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import static by.solbegsoft.urlshorteneruaa.util.UserStatus.*;
 
 @Slf4j
 @Service
-@Transactional
 public class UserService {
-    private UserRepository userRepository;
-    private ActivateKeyRepository activateKeyRepository;
-    private PasswordEncoder passwordEncoder;
-    private UserDetailServiceImpl userDetailService;
+    private final UserRepository userRepository;
+    private final ActivateKeyRepository activateKeyRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserDetailServiceImpl userDetailService;
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @Autowired
     public UserService(UserRepository userRepository,
@@ -54,22 +60,42 @@ public class UserService {
         }
     }
 
-    public void activate(String key){
-        if (activateKeyRepository.existsByKey(key)) {
-            ActivateKey activateKey = activateKeyRepository.getByKey(key).get();
+    @Transactional
+    public void activate(String jwtKey){
+        if(jwtKey == null){
+            throw new ActiveKeyNotValidException("Activate key cannot be null.");
+        }
+        Map<String, Object> claimsMap = getClaimsMap(jwtKey);
+        String simpleKey = claimsMap.get("simpleKey").toString();
+        Object expiration = claimsMap.get("expiration");
+        if (isExpired(expiration)){
+            activateKeyRepository.deleteActivateKeyBySimpleKey(simpleKey);
+            throw new ActiveKeyNotValidException("Activate key is expired");
+        } else {
+            ActivateKey activateKey = getActivateKeyOrThrowException(simpleKey);
             User user = activateKey.getUser();
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime expirationDate = activateKey.getExpirationDate();
-
-            if (now.isAfter(expirationDate)){
-                activateKeyRepository.deleteActivateKeyByKey(key);
-                throw new ActiveKeyNotValidException("Activate key is expired.");
-            }
             user.setUserStatus(ACTIVE);
             userRepository.save(user);
-            activateKeyRepository.deleteActivateKeyByKey(key);
-        }else {
-            throw new ActiveKeyNotValidException("Activate key not valid.");
+            activateKeyRepository.deleteActivateKeyBySimpleKey(simpleKey);
         }
+    }
+
+    private Map<String, Object> getClaimsMap(String jwtKey){
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtKey);
+            return new HashMap<>(claimsJws.getBody());
+        }catch (JwtException | IllegalArgumentException e){
+            throw new ActiveKeyNotValidException("Activate key not valid");
+        }
+    }
+
+    private boolean isExpired(Object expiration) {
+        LocalDateTime expirationDate = LocalDateTime.parse(expiration.toString());
+        return LocalDateTime.now().isAfter(expirationDate);
+    }
+
+    private ActivateKey getActivateKeyOrThrowException(String simpleKey) {
+        return activateKeyRepository.getBySimpleKey(simpleKey)
+                .orElseThrow(() -> new ActiveKeyNotValidException("Activate key doesn't exist"));
     }
 }

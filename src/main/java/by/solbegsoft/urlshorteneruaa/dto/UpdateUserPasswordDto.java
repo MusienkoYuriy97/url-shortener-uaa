@@ -1,4 +1,4 @@
-package by.solbegsoft.urlshorteneruaa.model.dto;
+package by.solbegsoft.urlshorteneruaa.dto;
 
 import lombok.Getter;
 

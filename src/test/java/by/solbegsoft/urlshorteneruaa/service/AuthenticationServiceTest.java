@@ -3,9 +3,9 @@ package by.solbegsoft.urlshorteneruaa.service;
 import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.dto.AuthenticationRequestDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.AuthenticationRequestDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
 import by.solbegsoft.urlshorteneruaa.repository.ActivateKeyRepository;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.JwtTokenProvider;
@@ -23,9 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 import java.util.UUID;
 
-import static by.solbegsoft.urlshorteneruaa.model.UserStatus.ACTIVE;
+import static by.solbegsoft.urlshorteneruaa.util.UserStatus.ACTIVE;
 import static org.junit.jupiter.api.Assertions.*;
-import static by.solbegsoft.urlshorteneruaa.model.UserRole.ROLE_USER;
+import static by.solbegsoft.urlshorteneruaa.util.UserRole.ROLE_USER;
 import static org.mockito.ArgumentMatchers.*;
 
 @SpringBootTest
@@ -60,7 +60,7 @@ class AuthenticationServiceTest {
     @BeforeEach
     void setUser() {
         User user = User.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .email("musienko97@gmail.com")
                 .firstName("Yuriy")
                 .lastName("Musienko")
@@ -70,7 +70,7 @@ class AuthenticationServiceTest {
                 .build();
 
         ActivateKey activateKey = new ActivateKey();
-        activateKey.setKey("hello");
+        activateKey.setSimpleKey("hello");
 
         BDDMockito
                 .given(activateKeyRepository.save(any(ActivateKey.class)))

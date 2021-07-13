@@ -1,17 +1,15 @@
 package by.solbegsoft.urlshorteneruaa.mapper;
 
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.UserRole;
-import by.solbegsoft.urlshorteneruaa.model.UserStatus;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static by.solbegsoft.urlshorteneruaa.model.UserRole.*;
-import static by.solbegsoft.urlshorteneruaa.model.UserStatus.*;
+import static by.solbegsoft.urlshorteneruaa.util.UserRole.*;
+import static by.solbegsoft.urlshorteneruaa.util.UserStatus.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest

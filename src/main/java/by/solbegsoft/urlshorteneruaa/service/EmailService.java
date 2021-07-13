@@ -1,30 +1,37 @@
 package by.solbegsoft.urlshorteneruaa.service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @Service
 public class EmailService {
+    @Value("${jwt.secret}")
+    private String secretKey;
+
     public static final String EMAIL_VERIFICATION_TEMPLATE = "email";
+
     public static final String TEMPLATE_VARIABLE_NAME = "name";
-    public static final String TEMPLATE_VARIABLE_TOKEN = "token";
-    public static final String TEMPLATE_VARIABLE_HOST = "host";
+    public static final String TEMPLATE_VARIABLE_LINK = "link";
 
     public static final String EMAIL_FROM = "yury.musienko@solbeg.com";
     public static final String EMAIL_SUBJECT_ACTIVATION_LINK   = "Activation Link";
-    public static final String HOST = "http://localhost:8080/api/v1/user/activate/";
+    public static final String ROOT_PATH = "http://localhost:8080/api/v1/user/activate/";
 
     private JavaMailSender javaMailSender;
     private TemplateEngine templateEngine;
@@ -37,12 +44,13 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendEmail(String to, String fullName, String activationKey){
+    public void sendEmail(String to, String fullName, String simpleKey){
         try {
             Map<String, Object> variables = new HashMap<>();
+            String jwtKey = toJwt(simpleKey);
+            String link = ROOT_PATH + jwtKey;
             variables.put(TEMPLATE_VARIABLE_NAME, fullName);
-            variables.put(TEMPLATE_VARIABLE_TOKEN, activationKey);
-            variables.put(TEMPLATE_VARIABLE_HOST, HOST);
+            variables.put(TEMPLATE_VARIABLE_LINK, link);
 
             String body = buildTemplate(variables);
 
@@ -58,7 +66,19 @@ public class EmailService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
 
+    private String toJwt(String simpleKey){
+        Claims claims = Jwts.claims().setSubject("activate key");
+        LocalDateTime issuedAt = LocalDateTime.now();
+        LocalDateTime expiration = issuedAt.plusHours(1);
+        claims.put("simpleKey", simpleKey);
+        claims.put("issuedAt", issuedAt.toString());
+        claims.put("expiration", expiration.toString());
+        return Jwts.builder()
+                .setClaims(claims)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
     }
 
     private String buildTemplate(Map<String, Object> variables){

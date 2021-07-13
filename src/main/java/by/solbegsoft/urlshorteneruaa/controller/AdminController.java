@@ -1,8 +1,8 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
+import by.solbegsoft.urlshorteneruaa.dto.UpdateRoleUserDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.dto.UpdateRoleUserDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
 import by.solbegsoft.urlshorteneruaa.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "${api.path}"+"admin")
+@RequestMapping(value = "${api.path}"+"/admin")
 public class AdminController {
     private AdminService adminService;
 
@@ -25,11 +25,11 @@ public class AdminController {
 
     @PutMapping("/role")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateRole(@Valid @RequestBody UpdateRoleUserDto dto){
-        if (adminService.isCurrentAdmin(dto.getEmail())){
+    public ResponseEntity<?> updateRole(@Valid @RequestBody UpdateRoleUserDto updateRoleUserDto){
+        if (adminService.isCurrentAdmin(updateRoleUserDto.getEmail())){
             return new ResponseEntity<>("You can't change the role for yourself", HttpStatus.CONFLICT);
         }
-        UserResponseDto response = adminService.updateUserRole(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        UserResponseDto userResponseDto = adminService.updateUserRole(updateRoleUserDto);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 }

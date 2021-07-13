@@ -1,8 +1,8 @@
 package by.solbegsoft.urlshorteneruaa.mapper;
 
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
