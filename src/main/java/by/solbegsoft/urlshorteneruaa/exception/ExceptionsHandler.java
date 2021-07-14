@@ -28,13 +28,13 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
                 .stream()
                 .map(error -> format("[%s] with message [%s]", error.getField(), error.getDefaultMessage()))
                 .collect(Collectors.joining(" and "));
-        CustomErrorResponse errors = new CustomErrorResponse();
-        errors.setError("Validation failed, please fill fields correctly. Validation failed for: " + fields);
-        errors.setStatus(HttpStatus.BAD_REQUEST.value());
-        errors.setTimestamp(LocalDateTime.now());
+        CustomErrorResponse customErrorResponse = new CustomErrorResponse();
+        customErrorResponse.setError("Validation failed, please fill fields correctly. Validation failed for: " + fields);
+        customErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        customErrorResponse.setTimestamp(LocalDateTime.now());
 
         return handleExceptionInternal(
-                ex, errors, headers, HttpStatus.BAD_REQUEST, request);
+                ex, customErrorResponse, headers, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(UserDataException.class)

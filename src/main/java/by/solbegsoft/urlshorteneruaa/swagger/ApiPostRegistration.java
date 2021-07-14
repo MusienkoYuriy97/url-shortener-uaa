@@ -1,16 +1,12 @@
 package by.solbegsoft.urlshorteneruaa.swagger;
 
-import by.solbegsoft.urlshorteneruaa.dto.AuthenticationRequestDto;
 import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
-import io.swagger.annotations.ApiKeyAuthDefinition;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,8 +17,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(summary = "Registration new user")
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Successfully register new user"),
-        @ApiResponse(responseCode = "400", description = "Fields entered incorrectly"),
-        @ApiResponse(responseCode = "409", description = "User with this email already exist")})
-public @interface ApiPostRegistrationMethod {
+        @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(mediaType = "application/json",schema = @Schema(implementation = UserResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = "Fields entered incorrectly", content = @Content),
+        @ApiResponse(responseCode = "409", description = "User with this email already exist", content = @Content)})
+@SecurityRequirements
+public @interface ApiPostRegistration {
 }
+

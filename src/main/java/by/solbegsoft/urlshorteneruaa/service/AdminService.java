@@ -32,21 +32,13 @@ public class AdminService {
         this.userMapper = userMapper;
     }
 
-    public UserResponseDto updateUserRole(UpdateRoleUserDto updateRoleUserDto) {
+    public UserResponseDto updateUserRole(UpdateRoleUserDto updateRoleUserDto, UserRole newRole) {
         User user = authenticationService.getByEmailOrThrowException(updateRoleUserDto.getEmail());
 
-        String userRole = user.getUserRole().name();
-        String newRole = updateRoleUserDto.getNewRole();
-
-        if (userRole.equals(newRole)){
-            log.warn("User already have role " + updateRoleUserDto.getNewRole());
-            throw new UserDataException("User already have this role");
-        }else {
-            user.setUserRole(UserRole.valueOf(newRole));
-            User save = userRepository.save(user);
-            log.info("User role was successfully update");
-            return userMapper.toDto(save);
-        }
+        user.setUserRole(newRole);
+        userRepository.save(user);
+        log.info("User role was successfully update");
+        return userMapper.toDto(user);
     }
 
     public boolean isCurrentAdmin(String email) {

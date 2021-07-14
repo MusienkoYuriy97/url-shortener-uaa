@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,8 +79,13 @@ public class AuthenticationService {
         return simpleKey;
     }
 
-    public String login(AuthenticationRequestDto dto) throws NoActivatedAccountException {
-        User user = getByEmailOrThrowException(dto.getEmail());
+    public String login(AuthenticationRequestDto dto){
+        User user;
+        try {
+            user = getByEmailOrThrowException(dto.getEmail());
+        }catch (UserDataException ex){
+            throw new UsernameNotFoundException("Wrong email/password");
+        }
 
         if (UserStatus.BLOCKED.equals(user.getUserStatus())){
             log.warn("Account is BLOCKED.");

@@ -2,21 +2,18 @@ package by.solbegsoft.urlshorteneruaa.model;
 
 import by.solbegsoft.urlshorteneruaa.util.UserRole;
 import by.solbegsoft.urlshorteneruaa.util.UserStatus;
-import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.UUID;
 
-@Builder
 @Entity
-@Data
+@Data @Builder
 @AllArgsConstructor @NoArgsConstructor
 @Table(name = "users")
 public class User implements UserDetails {

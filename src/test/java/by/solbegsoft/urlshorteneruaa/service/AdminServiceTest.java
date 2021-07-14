@@ -1,13 +1,12 @@
 package by.solbegsoft.urlshorteneruaa.service;
 
-import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.dto.UpdateRoleUserDto;
 import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.UserDetailServiceImpl;
-import org.checkerframework.checker.units.qual.A;
+import by.solbegsoft.urlshorteneruaa.util.UserRole;
 import org.junit.jupiter.api.*;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
@@ -28,7 +27,7 @@ class AdminServiceTest {
     private UserDetailServiceImpl userDetailService;
     @Autowired
     private UserMapper userMapper;
-    @Autowired
+    @Mock
     private AuthenticationService authenticationService;
     private AdminService adminService;
 
@@ -55,6 +54,9 @@ class AdminServiceTest {
                 .given(userDetailService.getCurrentUser())
                 .willReturn(admin);
         BDDMockito
+                .given(authenticationService.getByEmailOrThrowException("user@gmail.com"))
+                .willReturn(user);
+        BDDMockito
                 .given(userRepository.existsByEmail("user@gmail.com"))
                 .willReturn(true);
         BDDMockito
@@ -69,19 +71,10 @@ class AdminServiceTest {
     void updateUserRole() {
         UpdateRoleUserDto dto = new UpdateRoleUserDto();
         dto.setEmail("user@gmail.com");
-        dto.setNewRole("ROLE_ADMIN");
-        UserResponseDto response = adminService.updateUserRole(dto);
+        UserRole newRole = ROLE_USER;
+        UserResponseDto response = adminService.updateUserRole(dto, newRole);
 
-        assertEquals(dto.getNewRole(), response.getUserRole());
-    }
-
-    @Test
-    void updateUserRoleThrowException() {
-        UpdateRoleUserDto dto = new UpdateRoleUserDto();
-        dto.setEmail("user@gmail.com");
-        dto.setNewRole("ROLE_USER");
-
-        assertThrows(UserDataException.class, () -> adminService.updateUserRole(dto));
+        assertEquals(newRole, response.getUserRole());
     }
 
     @Test

@@ -28,8 +28,8 @@ public class UserMapperImpl implements UserMapper{
         dto.setEmail(user.getEmail());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
-        dto.setUserStatus(user.getUserStatus().name());
-        dto.setUserRole(user.getUserRole().name());
+        dto.setUserStatus(user.getUserStatus());
+        dto.setUserRole(user.getUserRole());
         return dto;
     }
 }

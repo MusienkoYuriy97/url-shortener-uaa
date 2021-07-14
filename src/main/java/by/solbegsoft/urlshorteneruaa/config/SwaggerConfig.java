@@ -1,57 +1,41 @@
 package by.solbegsoft.urlshorteneruaa.config;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.*;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
+    private static final String API_KEY = "ApiKey";
+
     @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("by.solbegsoft"))
-                .paths(PathSelectors.any())
-                .build();
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .components(new Components()
+                        .addSecuritySchemes(API_KEY,apiKeySecuritySchema()))
+                .info(
+                        new Info()
+                                .title("url-shortener-uaa documentation")
+                                .version("1.0")
+                                .contact(
+                                        new Contact()
+                                                .email("97musienko@gmail.com")
+                                                .name("Yury Musienko")
+                                )
+                )
+                .security(Collections.singletonList(new SecurityRequirement().addList(API_KEY)));
     }
 
-    private ApiInfo apiInfo() {
-        return new ApiInfo(
-                "My REST API, url-shortener-uaa",
-                "This is the documentation for user authorization and authentication",
-                "API v1",
-                "test",
-                new Contact("Yuriy Musienko", "test", "97musienko@gmail.com"),
-                "License of API", "API license URL", Collections.emptyList());
-    }
-
-    private ApiKey apiKey() {
-        return new ApiKey("JWT", "Authorization", "header");
-    }
-
-    private SecurityContext securityContext() {
-        return SecurityContext.builder()
-                .securityReferences(defaultAuth()).build();
-    }
-
-    private List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-        authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
+    public SecurityScheme apiKeySecuritySchema() {
+        return new SecurityScheme()
+                .name("Authorization")
+                .in(SecurityScheme.In.HEADER)
+                .type(SecurityScheme.Type.APIKEY);
     }
 }
