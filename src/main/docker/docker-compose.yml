@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  uaa:
+    image: 'uaa'
+    build:
+      context: .
+    ports:
+    - 8080:8080
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/url_shortener
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+  db:
+    image: 'postgres'
+    environment:
+        - POSTGRES_DB=url_shortener
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres

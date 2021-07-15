@@ -47,7 +47,7 @@ class UserMapperImplTest {
         assertEquals(user.getFirstName(), dto.getFirstName());
         assertEquals(user.getLastName(), dto.getLastName());
         assertEquals(user.getEmail(), dto.getEmail());
-        assertEquals(user.getUserRole().name(), dto.getUserRole());
-        assertEquals(user.getUserStatus().name(), dto.getUserStatus());
+        assertEquals(user.getUserRole(), dto.getUserRole());
+        assertEquals(user.getUserStatus(), dto.getUserStatus());
     }
 }
