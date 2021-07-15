@@ -14,4 +14,4 @@ CREATE TABLE IF NOT EXISTS activate_key(
     user_uuid UUID NOT NULL,
     PRIMARY KEY (uuid),
     FOREIGN KEY (user_uuid)
-        REFERENCES users (uuid));
+    REFERENCES users (uuid));
