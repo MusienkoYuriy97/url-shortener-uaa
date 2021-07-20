@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 @Schema(name = "User(Unuseful in Controller)")
@@ -77,5 +78,18 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserStatus.ACTIVE.equals(userStatus);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && userStatus == user.userStatus && userRole == user.userRole;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, email, password, userStatus, userRole);
     }
 }

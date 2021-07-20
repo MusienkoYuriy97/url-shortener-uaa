@@ -1,5 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.service;
 
+import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
@@ -45,6 +46,10 @@ class AuthenticationServiceTest {
     private UserMapper userMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private final String FIRST_NAME = "Yury";
+    private final String LAST_NAME = "Musienko";
+    private final String EMAIL = "musienko97@gmail.com";
+    private final String PASSWORD = "12345";
 
     @BeforeEach
     void setConstruct() {
@@ -61,31 +66,24 @@ class AuthenticationServiceTest {
     void setUser() {
         User user = User.builder()
                 .uuid(UUID.randomUUID())
-                .email("musienko97@gmail.com")
-                .firstName("Yuriy")
-                .lastName("Musienko")
-                .password(passwordEncoder.encode("12345"))
+                .email(EMAIL)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .password(passwordEncoder.encode(PASSWORD))
                 .userRole(ROLE_USER)
                 .userStatus(ACTIVE)
                 .build();
-
-        ActivateKey activateKey = new ActivateKey();
-        activateKey.setSimpleKey("hello");
-
-        BDDMockito
-                .given(activateKeyRepository.save(any(ActivateKey.class)))
-                .willReturn(activateKey);
 
         BDDMockito
                 .doNothing().when(emailService)
                 .sendEmail(eq(user.getEmail()), eq(user.getFirstName()), anyObject());
 
         BDDMockito
-                .given(userRepository.existsByEmail("musienko97@gmail.com"))
+                .given(userRepository.existsByEmail(EMAIL))
                 .willReturn(false);
 
         BDDMockito
-                .given(userRepository.getByEmail("musienko97@gmail.com"))
+                .given(userRepository.getByEmail(EMAIL))
                 .willReturn(Optional.of(user));
 
         BDDMockito
@@ -100,10 +98,10 @@ class AuthenticationServiceTest {
     @Test
     void save() {
         UserCreateDto dto = new UserCreateDto();
-        dto.setFirstName("Yuriy");
-        dto.setLastName("Musienko");
-        dto.setEmail("musienko97@gmail.com");
-        dto.setPassword("12345");
+        dto.setFirstName(FIRST_NAME);
+        dto.setLastName(LAST_NAME);
+        dto.setEmail(EMAIL);
+        dto.setPassword(PASSWORD);
         UserResponseDto save = authenticationService.save(dto);
         assertEquals(dto.getFirstName(), save.getFirstName());
         assertEquals(dto.getLastName(), save.getLastName());
@@ -114,8 +112,20 @@ class AuthenticationServiceTest {
     @Test
     void login() {
         AuthenticationRequestDto dto = new AuthenticationRequestDto();
-        dto.setEmail("musienko97@gmail.com");
-        dto.setPassword("12345");
+        dto.setEmail(EMAIL);
+        dto.setPassword(PASSWORD);
         authenticationService.login(dto);
+    }
+
+    @Test
+    void getByEmailOrThrowException(){
+        User user = authenticationService.getByEmailOrThrowException(EMAIL);
+        assertNotNull(user);
+        assertEquals(EMAIL, user.getEmail());
+    }
+
+    @Test
+    void getByEmailOrThrowExceptionEX(){
+        assertThrows(UserDataException.class, () -> authenticationService.getByEmailOrThrowException("wrong"));
     }
 }
