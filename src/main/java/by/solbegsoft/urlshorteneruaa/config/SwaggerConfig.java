@@ -1,5 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.config;
 
+import by.solbegsoft.urlshorteneruaa.api.Url;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import io.swagger.v3.core.converter.AnnotatedType;
@@ -45,8 +46,11 @@ public class SwaggerConfig {
                 .resolveAsResolvedSchema(new AnnotatedType(User.class));
         ResolvedSchema resolvedSchemaActivateKey = ModelConverters.getInstance()
                 .resolveAsResolvedSchema(new AnnotatedType(ActivateKey.class));
+        ResolvedSchema resolvedSchemaUrl = ModelConverters.getInstance()
+                .resolveAsResolvedSchema(new AnnotatedType(Url.class));
         return openApi -> openApi
                 .schema(resolvedSchemaUser.schema.getName(), resolvedSchemaUser.schema)
+                .schema(resolvedSchemaUrl.schema.getName(), resolvedSchemaUrl.schema)
                 .schema(resolvedSchemaActivateKey.schema.getName(), resolvedSchemaActivateKey.schema);
     }
 
