@@ -1,6 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.repository;
 
-import by.solbegsoft.urlshorteneruaa.config.TestConfig;
+import by.solbegsoft.urlshorteneruaa.config.PasswordEncoderConfig;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +17,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(PasswordEncoderConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoderTest;
     private final String FIRST_NAME = "Yury";
     private final String LAST_NAME = "Musienko";
     private final String EMAIL = "musienko97@gmail.com";
     private final String PASSWORD = "12345";
-    @Autowired
-    private PasswordEncoder passwordEncoder ;
 
     @Test
     void existsByEmail() {
@@ -36,7 +36,7 @@ class UserRepositoryTest {
                 .email(EMAIL)
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
-                .password(passwordEncoder.encode(PASSWORD))
+                .password(passwordEncoderTest.encode(PASSWORD))
                 .userRole(ROLE_USER)
                 .userStatus(ACTIVE)
                 .build();

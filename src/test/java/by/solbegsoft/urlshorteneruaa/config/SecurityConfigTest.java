@@ -2,18 +2,21 @@ package by.solbegsoft.urlshorteneruaa.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class SecurityConfigTest {
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    private final String PASSWORD = "1234";
 
     @Test
     void passwordEncoder() {
-        String password = "1234";
-        String encode = passwordEncoder.encode(password);
-        assertTrue(passwordEncoder.matches(password, encode));
+
+        String encode = passwordEncoder.encode(PASSWORD);
+        assertTrue(passwordEncoder.matches(PASSWORD, encode));
     }
 }

@@ -30,6 +30,8 @@ class AdminServiceTest {
     @Mock
     private AuthenticationService authenticationService;
     private AdminService adminService;
+    private final String EMAIL_ADMIN = "admin@gmail.com";
+    private final String EMAIL_USER = "user@gmail.com";
 
     @BeforeEach
     void setConstruct() {
@@ -41,11 +43,11 @@ class AdminServiceTest {
     void setUser() {
         User admin = User.builder()
                 .userRole(ROLE_ADMIN)
-                .email("admin@gmail.com")
+                .email(EMAIL_ADMIN)
                 .build();
 
         User user = User.builder()
-                .email("user@gmail.com")
+                .email(EMAIL_USER)
                 .userRole(ROLE_USER)
                 .userStatus(ACTIVE)
                 .build();
@@ -54,13 +56,13 @@ class AdminServiceTest {
                 .given(userDetailService.getCurrentUser())
                 .willReturn(admin);
         BDDMockito
-                .given(authenticationService.getByEmailOrThrowException("user@gmail.com"))
+                .given(authenticationService.getByEmailOrThrowException(EMAIL_USER))
                 .willReturn(user);
         BDDMockito
-                .given(userRepository.existsByEmail("user@gmail.com"))
+                .given(userRepository.existsByEmail(EMAIL_USER))
                 .willReturn(true);
         BDDMockito
-                .given(userRepository.getByEmail("user@gmail.com"))
+                .given(userRepository.getByEmail(EMAIL_USER))
                 .willReturn(Optional.of(user));
         BDDMockito
                 .given(userRepository.save(user))
@@ -70,7 +72,7 @@ class AdminServiceTest {
     @Test
     void updateUserRole() {
         UpdateRoleUserDto dto = new UpdateRoleUserDto();
-        dto.setEmail("user@gmail.com");
+        dto.setEmail(EMAIL_USER);
         UserRole newRole = ROLE_USER;
         UserResponseDto response = adminService.updateUserRole(dto, newRole);
 
@@ -79,14 +81,14 @@ class AdminServiceTest {
 
     @Test
     void isCurrentUser(){
-        boolean currentAdmin = adminService.isCurrentAdmin("admin@gmail.com");
+        boolean currentAdmin = adminService.isCurrentAdmin(EMAIL_ADMIN);
 
         assertTrue(currentAdmin);
     }
 
     @Test
     void notCurrentUser(){
-        boolean currentAdmin = adminService.isCurrentAdmin("user@gmail.com");
+        boolean currentAdmin = adminService.isCurrentAdmin(EMAIL_USER);
 
         assertFalse(currentAdmin);
     }

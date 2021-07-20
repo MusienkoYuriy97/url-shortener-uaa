@@ -18,14 +18,19 @@ class UserMapperImplTest {
     private UserMapper userMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private final String FIRST_NAME = "Yury";
+    private final String LAST_NAME = "Musienko";
+    private final String EMAIL = "musienko97@gmail.com";
+    private final String PASSWORD = "12345";
+
 
     @Test
     void toUser() {
         UserCreateDto dto = new UserCreateDto();
-        dto.setFirstName("Yuriy");
-        dto.setLastName("Musienko");
-        dto.setEmail("mus@gmail.com");
-        dto.setPassword("1234");
+        dto.setFirstName(FIRST_NAME);
+        dto.setLastName(LAST_NAME);
+        dto.setEmail(EMAIL);
+        dto.setPassword(PASSWORD);
         User user = userMapper.toUser(dto);
 
         assertEquals(dto.getFirstName(), user.getFirstName());
@@ -37,9 +42,9 @@ class UserMapperImplTest {
     @Test
     void toDto() {
         User user = new User();
-        user.setFirstName("Yuriy");
-        user.setLastName("Musienko");
-        user.setEmail("mus@gmail.com");
+        user.setFirstName(FIRST_NAME);
+        user.setLastName(LAST_NAME);
+        user.setEmail(EMAIL);
         user.setUserStatus(ACTIVE);
         user.setUserRole(ROLE_USER);
         UserResponseDto dto = userMapper.toDto(user);
