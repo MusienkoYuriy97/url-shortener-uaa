@@ -1,8 +1,8 @@
 package by.solbegsoft.urlshorteneruaa.mapper;
 
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +26,7 @@ class UserMapperImplTest {
 
     @Test
     void toUser() {
-        UserCreateDto dto = new UserCreateDto();
+        UserCreateRequest dto = new UserCreateRequest();
         dto.setFirstName(FIRST_NAME);
         dto.setLastName(LAST_NAME);
         dto.setEmail(EMAIL);
@@ -47,7 +47,7 @@ class UserMapperImplTest {
         user.setEmail(EMAIL);
         user.setUserStatus(ACTIVE);
         user.setUserRole(ROLE_USER);
-        UserResponseDto dto = userMapper.toDto(user);
+        UserCreateResponse dto = userMapper.toDto(user);
 
         assertEquals(user.getFirstName(), dto.getFirstName());
         assertEquals(user.getLastName(), dto.getLastName());

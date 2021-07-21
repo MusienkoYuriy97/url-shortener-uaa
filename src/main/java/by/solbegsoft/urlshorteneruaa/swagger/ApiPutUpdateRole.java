@@ -1,6 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.swagger;
 
-import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(summary = "Update role of user by the admin")
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json",schema = @Schema(implementation = UserResponseDto.class))),
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json",schema = @Schema(implementation = UserCreateResponse.class))),
         @ApiResponse(responseCode = "400", description = "Fields entered incorrectly", content = @Content)})
 public @interface ApiPutUpdateRole {
 }

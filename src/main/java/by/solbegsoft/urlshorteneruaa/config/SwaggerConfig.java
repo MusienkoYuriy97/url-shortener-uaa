@@ -1,6 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.config;
 
-import by.solbegsoft.urlshorteneruaa.api.Url;
+import by.solbegsoft.urlshorteneruaa.client.model.Url;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import io.swagger.v3.core.converter.AnnotatedType;

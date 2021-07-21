@@ -4,8 +4,8 @@ import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.util.UserRole;
-import by.solbegsoft.urlshorteneruaa.dto.UpdateRoleUserDto;
-import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UpdateRoleRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.UserDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -13,39 +13,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class AdminService {
     private UserRepository userRepository;
     private UserDetailServiceImpl userDetailService;
-    private AuthenticationService authenticationService;
     private UserMapper userMapper;
 
     @Autowired
     public AdminService(UserRepository userRepository,
                         @Qualifier("userDetailsServiceImpl") UserDetailServiceImpl userDetailService,
-                        AuthenticationService authenticationService,
                         UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userDetailService = userDetailService;
-        this.authenticationService = authenticationService;
         this.userMapper = userMapper;
     }
 
-    public UserResponseDto updateUserRole(UpdateRoleUserDto updateRoleUserDto, UserRole newRole) {
-        User user = authenticationService.getByEmailOrThrowException(updateRoleUserDto.getEmail());
-
-        user.setUserRole(newRole);
+    public UserCreateResponse updateUserRole(UpdateRoleRequest updateRoleRequest) {
+        User user = getByUuidOrThrowException(UUID.fromString(updateRoleRequest.getUuid()));
+        user.setUserRole(UserRole.valueOf(updateRoleRequest.getRole()));
         userRepository.save(user);
         log.info("User role was successfully update");
         return userMapper.toDto(user);
     }
 
-    public boolean isCurrentAdmin(String email) {
-        if (email == null){
+    public boolean isCurrentAdmin(String uuid) {
+        if (uuid == null){
+            log.warn("User uuid is null");
             throw new UserDataException("Email is null.");
         }
+        log.debug("Check" + uuid);
         return userDetailService.getCurrentUser()
-                .getEmail().equals(email);
+                .getUuid().equals(UUID.fromString(uuid));
+    }
+
+    private User getByUuidOrThrowException(UUID uuid){
+        Optional<User> optionalUser = userRepository.findById(uuid);
+        if (optionalUser.isPresent()){
+            return optionalUser.get();
+        }else {
+            log.warn("User with this uuid doesn't exist. Uuid:" + uuid);
+            throw new UserDataException("User with this uuid doesn't exist");
+        }
     }
 }

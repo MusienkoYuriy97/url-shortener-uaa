@@ -1,8 +1,7 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
-import by.solbegsoft.urlshorteneruaa.dto.AuthenticationRequestDto;
-import by.solbegsoft.urlshorteneruaa.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.LoginUserRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
 import by.solbegsoft.urlshorteneruaa.service.AuthenticationService;
 import by.solbegsoft.urlshorteneruaa.swagger.ApiPostLogin;
 import by.solbegsoft.urlshorteneruaa.swagger.ApiPostRegistration;
@@ -29,16 +28,16 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     @ApiPostRegistration
-    public ResponseEntity<?> registration(@Valid @RequestBody UserCreateDto userCreateDto){
-        UserResponseDto userResponseDto = authenticationService.save(userCreateDto);
-        return new ResponseEntity<>(userResponseDto, HttpStatus.CREATED);
+    public ResponseEntity<?> registration(@Valid @RequestBody UserCreateRequest userCreateRequest){
+        return new ResponseEntity<>(authenticationService.save(userCreateRequest),
+                HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     @PreAuthorize("!isAuthenticated()")
     @ApiPostLogin
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDto authenticationRequestDto){
-        String jwtBearerToken = authenticationService.login(authenticationRequestDto);
-        return new ResponseEntity<>(jwtBearerToken, HttpStatus.OK);
+    public ResponseEntity<?> login(@RequestBody LoginUserRequest loginUserRequest){
+        return new ResponseEntity<>(authenticationService.login(loginUserRequest),
+                HttpStatus.OK);
     }
 }

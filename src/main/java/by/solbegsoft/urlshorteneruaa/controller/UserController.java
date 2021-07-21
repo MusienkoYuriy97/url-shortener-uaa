@@ -1,6 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
-import by.solbegsoft.urlshorteneruaa.dto.UpdateUserPasswordDto;
+import by.solbegsoft.urlshorteneruaa.dto.UpdatePasswordRequest;
 import by.solbegsoft.urlshorteneruaa.service.UserService;
 import by.solbegsoft.urlshorteneruaa.swagger.ApiGetActivate;
 import by.solbegsoft.urlshorteneruaa.swagger.ApiPutUpdatePassword;
@@ -26,9 +26,10 @@ public class UserController {
 
     @PutMapping("/password")
     @ApiPutUpdatePassword
-    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdateUserPasswordDto updateUserPasswordDto){
-        userService.updatePassword(updateUserPasswordDto);
-        return new ResponseEntity<>("Successfully updated password", HttpStatus.OK);
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest){
+        userService.updatePassword(updatePasswordRequest);
+        return new ResponseEntity<>("Successfully updated password",
+                HttpStatus.OK);
     }
 
     @GetMapping("/activate/{activateKey}")

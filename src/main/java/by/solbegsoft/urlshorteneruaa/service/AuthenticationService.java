@@ -7,9 +7,9 @@ import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.util.UserStatus;
-import by.solbegsoft.urlshorteneruaa.dto.AuthenticationRequestDto;
-import by.solbegsoft.urlshorteneruaa.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.LoginUserRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
 import by.solbegsoft.urlshorteneruaa.repository.ActivateKeyRepository;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.JwtTokenProvider;
@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,39 +50,39 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public UserResponseDto save(UserCreateDto userCreateDto){
-        if (userRepository.existsByEmail(userCreateDto.getEmail())) {
+    public UserCreateResponse save(UserCreateRequest userCreateRequest){
+        if (userRepository.existsByEmail(userCreateRequest.getEmail())) {
             log.warn("User with this email already exist");
             throw new UserDataException("User with this email already exist");
         }
-        User user = userMapper.toUser(userCreateDto);
+        User user = userMapper.toUser(userCreateRequest);
         user.setUserRole(ROLE_USER);
         user.setUserStatus(BLOCKED);
         log.debug("Try save user " + user);
-        User savedUser = userRepository.save(user);
-        log.debug("Saved user " + savedUser);
-        String email = savedUser.getEmail();
-        String simpleKey = saveSimpleKey(email);
-        emailService.sendEmail(email, savedUser.getFirstName(), simpleKey);
-        return userMapper.toDto(savedUser);
+        userRepository.save(user);
+
+        String simpleKey = saveSimpleKey(user.getEmail());
+        log.debug(String.format("Send email to email:%s; first name: %s; simpleKey:%s", user.getEmail(), user.getFirstName(), simpleKey));
+        emailService.sendEmail(user.getEmail(), user.getFirstName(), simpleKey);
+        log.info("Successfully register a new user and send activate key");
+        return userMapper.toDto(user);
     }
 
     private String saveSimpleKey(String email){
         User user = getByEmailOrThrowException(email);
         ActivateKey activateKey = new ActivateKey();
-        String simpleKey = StringGenerator.generate(12);
-        activateKey.setSimpleKey(simpleKey);
+        activateKey.setSimpleKey(StringGenerator.generate(12));
         activateKey.setUser(user);
-        activateKeyRepository.save(activateKey);
-        log.info("Successfully added activated key for " + user.getEmail());
-        return simpleKey;
+        return activateKeyRepository.save(activateKey).getSimpleKey();
     }
 
-    public String login(AuthenticationRequestDto dto){
+    public String login(LoginUserRequest loginUserRequest){
         User user;
         try {
-            user = getByEmailOrThrowException(dto.getEmail());
+            user = getByEmailOrThrowException(loginUserRequest.getEmail());
+            log.debug("Get by email:" + user);
         }catch (UserDataException ex){
+            log.warn(String.format("User with emil:%s doesn't exist", loginUserRequest.getEmail()));
             throw new UsernameNotFoundException("Wrong email/password");
         }
 
@@ -91,16 +90,17 @@ public class AuthenticationService {
             log.warn("Account is BLOCKED.");
             throw new NoActivatedAccountException("Account not active.");
         }
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(),dto.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.getEmail(),
+                                                                                    loginUserRequest.getPassword()));
         String token = jwtTokenProvider.getPrefix() +
                        jwtTokenProvider.createToken(user.getUuid().toString(),
                                              user.getEmail(),
                                              user.getUserRole().name());
-        log.info("Successfully generate token for " + dto.getEmail());
+        log.info("Successfully generate token for " + loginUserRequest.getEmail());
         return token;
     }
 
-    public User getByEmailOrThrowException(String email){
+    private User getByEmailOrThrowException(String email){
         if (email == null){
             throw new UserDataException("Email is null.");
         }

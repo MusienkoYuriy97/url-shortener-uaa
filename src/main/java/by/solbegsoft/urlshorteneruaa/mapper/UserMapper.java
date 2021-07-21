@@ -1,10 +1,10 @@
 package by.solbegsoft.urlshorteneruaa.mapper;
 
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
 
 public interface UserMapper {
-    User toUser(UserCreateDto dto);
-    UserResponseDto toDto(User user);
+    User toUser(UserCreateRequest dto);
+    UserCreateResponse toDto(User user);
 }

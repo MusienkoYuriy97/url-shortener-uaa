@@ -1,10 +1,8 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
-import by.solbegsoft.urlshorteneruaa.dto.UpdateRoleUserDto;
-import by.solbegsoft.urlshorteneruaa.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UpdateRoleRequest;
 import by.solbegsoft.urlshorteneruaa.service.AdminService;
 import by.solbegsoft.urlshorteneruaa.swagger.ApiPutUpdateRole;
-import by.solbegsoft.urlshorteneruaa.util.UserRole;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +24,15 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @PutMapping("/role/{newRole}")
+    @PatchMapping("/role")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiPutUpdateRole
-    public ResponseEntity<?> updateRole(@Valid @RequestBody UpdateRoleUserDto updateRoleUserDto, @PathVariable(value = "newRole") UserRole newRole){
-        if (adminService.isCurrentAdmin(updateRoleUserDto.getEmail())){
-            return new ResponseEntity<>("You can't change the role for yourself", HttpStatus.CONFLICT);
+    public ResponseEntity<?> updateRole(@Valid @RequestBody UpdateRoleRequest updateRoleRequest){
+        if (adminService.isCurrentAdmin(updateRoleRequest.getUuid())){
+            return new ResponseEntity<>("You can't change the role for yourself",
+                    HttpStatus.CONFLICT);
         }
-
-        UserResponseDto userResponseDto = adminService.updateUserRole(updateRoleUserDto, newRole);
-        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(adminService.updateUserRole(updateRoleRequest),
+                HttpStatus.OK);
     }
 }

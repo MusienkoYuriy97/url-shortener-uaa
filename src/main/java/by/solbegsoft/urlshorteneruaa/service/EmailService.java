@@ -23,6 +23,14 @@ import java.util.Map;
 public class EmailService {
     @Value("${jwt.secret}")
     private String secretKey;
+    @Value("${root.path}")
+    private String rootPath;
+    @Value("${jwt.claimSimpleKey}")
+    private String claimSimpleKey;
+    @Value("${jwt.claimIssuedAt}")
+    private String claimIssuedAt;
+    @Value("${jwt.claimExpiration}")
+    private String claimExpiration;
 
     public static final String EMAIL_VERIFICATION_TEMPLATE = "email";
 
@@ -31,11 +39,9 @@ public class EmailService {
 
     public static final String EMAIL_FROM = "yury.musienko@solbeg.com";
     public static final String EMAIL_SUBJECT_ACTIVATION_LINK   = "Activation Link";
-    public static final String ROOT_PATH = "http://localhost:8080/api/v1/user/activate/";
 
     private JavaMailSender javaMailSender;
     private TemplateEngine templateEngine;
-
 
     @Autowired
     public EmailService(JavaMailSender javaMailSender,
@@ -48,7 +54,7 @@ public class EmailService {
         try {
             Map<String, Object> variables = new HashMap<>();
             String jwtKey = toJwt(simpleKey);
-            String link = ROOT_PATH + jwtKey;
+            String link = rootPath + jwtKey;
             variables.put(TEMPLATE_VARIABLE_NAME, fullName);
             variables.put(TEMPLATE_VARIABLE_LINK, link);
 
@@ -62,7 +68,7 @@ public class EmailService {
             messageHelper.setSubject(EMAIL_SUBJECT_ACTIVATION_LINK);
             messageHelper.setText(body,true);
             javaMailSender.send(mimeMessage);
-            log.info("Send activated link to " + to);
+            log.debug("Send activated link to " + to);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -71,10 +77,10 @@ public class EmailService {
     private String toJwt(String simpleKey){
         Claims claims = Jwts.claims().setSubject("activate key");
         LocalDateTime issuedAt = LocalDateTime.now();
-        LocalDateTime expiration = issuedAt.plusHours(1);
-        claims.put("simpleKey", simpleKey);
-        claims.put("issuedAt", issuedAt.toString());
-        claims.put("expiration", expiration.toString());
+        LocalDateTime expiration = issuedAt.plusHours(24);
+        claims.put(claimSimpleKey, simpleKey);
+        claims.put(claimIssuedAt, issuedAt.toString());
+        claims.put(claimExpiration, expiration.toString());
         return Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
