@@ -5,6 +5,6 @@ import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
 import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
 
 public interface UserMapper {
-    User toUser(UserCreateRequest dto);
+    User toUser(UserCreateRequest userCreateRequest);
     UserCreateResponse toDto(User user);
 }

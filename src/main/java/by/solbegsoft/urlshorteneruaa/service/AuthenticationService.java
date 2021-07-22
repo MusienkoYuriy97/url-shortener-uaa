@@ -21,7 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static by.solbegsoft.urlshorteneruaa.util.UserRole.*;
+import static by.solbegsoft.urlshorteneruaa.util.UserRole.ROLE_USER;
 import static by.solbegsoft.urlshorteneruaa.util.UserStatus.BLOCKED;
 
 @Slf4j
@@ -55,15 +55,17 @@ public class AuthenticationService {
             log.warn("User with this email already exist");
             throw new UserDataException("User with this email already exist");
         }
+        //user save
         User user = userMapper.toUser(userCreateRequest);
         user.setUserRole(ROLE_USER);
         user.setUserStatus(BLOCKED);
         log.debug("Try save user " + user);
         userRepository.save(user);
-
+        //send activate key to email
         String simpleKey = saveSimpleKey(user.getEmail());
         log.debug(String.format("Send email to email:%s; first name: %s; simpleKey:%s", user.getEmail(), user.getFirstName(), simpleKey));
         emailService.sendEmail(user.getEmail(), user.getFirstName(), simpleKey);
+
         log.info("Successfully register a new user and send activate key");
         return userMapper.toDto(user);
     }
@@ -92,12 +94,12 @@ public class AuthenticationService {
         }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.getEmail(),
                                                                                     loginUserRequest.getPassword()));
-        String token = jwtTokenProvider.getPrefix() +
+        String jwtToken = jwtTokenProvider.getPrefix() +
                        jwtTokenProvider.createToken(user.getUuid().toString(),
                                              user.getEmail(),
                                              user.getUserRole().name());
-        log.info("Successfully generate token for " + loginUserRequest.getEmail());
-        return token;
+        log.info("Successfully generate jwtToken for " + loginUserRequest.getEmail());
+        return jwtToken;
     }
 
     private User getByEmailOrThrowException(String email){

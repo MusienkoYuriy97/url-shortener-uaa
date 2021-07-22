@@ -17,5 +17,5 @@ import java.lang.annotation.Target;
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json",schema = @Schema(implementation = UserCreateResponse.class))),
         @ApiResponse(responseCode = "400", description = "Fields entered incorrectly", content = @Content)})
-public @interface ApiPutUpdateRole {
+public @interface ApiPatchUpdateRole {
 }

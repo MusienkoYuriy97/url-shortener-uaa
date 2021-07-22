@@ -74,7 +74,7 @@ public class EmailService {
         }
     }
 
-    private String toJwt(String simpleKey){
+    public String toJwt(String simpleKey){
         Claims claims = Jwts.claims().setSubject("activate key");
         LocalDateTime issuedAt = LocalDateTime.now();
         LocalDateTime expiration = issuedAt.plusHours(24);

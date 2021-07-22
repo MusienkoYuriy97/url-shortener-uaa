@@ -27,6 +27,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/registration")
+    @PreAuthorize("!isAuthenticated()")
     @ApiPostRegistration
     public ResponseEntity<?> registration(@Valid @RequestBody UserCreateRequest userCreateRequest){
         return new ResponseEntity<>(authenticationService.save(userCreateRequest),

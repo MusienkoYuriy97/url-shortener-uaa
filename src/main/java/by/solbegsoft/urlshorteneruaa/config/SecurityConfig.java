@@ -1,5 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.config;
 
+import by.solbegsoft.urlshorteneruaa.common.WhiteList;
 import by.solbegsoft.urlshorteneruaa.security.JwtConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

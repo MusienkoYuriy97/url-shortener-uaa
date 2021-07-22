@@ -3,9 +3,14 @@ package by.solbegsoft.urlshorteneruaa.mapper;
 import by.solbegsoft.urlshorteneruaa.model.User;
 import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
 import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
+import by.solbegsoft.urlshorteneruaa.util.UserRole;
+import by.solbegsoft.urlshorteneruaa.util.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import static by.solbegsoft.urlshorteneruaa.util.UserRole.*;
+import static by.solbegsoft.urlshorteneruaa.util.UserStatus.*;
 
 @Component
 public class UserMapperImpl implements UserMapper{

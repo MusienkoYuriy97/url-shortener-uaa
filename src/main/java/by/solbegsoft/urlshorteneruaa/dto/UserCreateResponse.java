@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Schema(description = "Response for user")
-@Getter @Setter
+@Builder
+@Data
+@AllArgsConstructor @NoArgsConstructor
 public class UserCreateResponse {
     @Schema(example = "Yury")
     private String firstName;

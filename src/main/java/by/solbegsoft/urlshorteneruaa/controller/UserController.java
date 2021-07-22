@@ -32,10 +32,10 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/activate/{activateKey}")
+    @GetMapping("/activate/{jwtActivateKey}")
     @ApiGetActivate
-    public ResponseEntity<?> activate(@PathVariable String activateKey){
-        userService.activate(activateKey);
+    public ResponseEntity<?> activate(@PathVariable String jwtActivateKey){
+        userService.activate(jwtActivateKey);
         return new ResponseEntity<>("Successful activate account.",
                 HttpStatus.ACCEPTED);
     }

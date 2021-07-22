@@ -41,7 +41,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         );
     }
 
-    public static Optional<String> getCurrentUserEmail() {
+    public static Optional<String> getCurrentEmail() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
                 .map(authentication -> {
@@ -56,7 +56,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     }
 
     public User getCurrentUser(){
-        Optional<String> currentUserEmail = getCurrentUserEmail();
+        Optional<String> currentUserEmail = getCurrentEmail();
         if (currentUserEmail.isPresent() & userRepository.existsByEmail(currentUserEmail.get())){
             return userRepository.getByEmail(currentUserEmail.get()).get();
         }

@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,16 +48,16 @@ public class UserService {
     }
 
     public void updatePassword(UpdatePasswordRequest updatePasswordRequest) {
-        User currentUser = userDetailService.getCurrentUser();
-        log.debug("Current user email is " + currentUser.getEmail());
+        User user = userDetailService.getCurrentUser();
+        log.debug("Current user email is " + user.getEmail());
 
         boolean matchesOldPasswords = passwordEncoder.matches(updatePasswordRequest.getOldPassword(),
-                                                              currentUser.getPassword());
+                                                              user.getPassword());
         if (matchesOldPasswords
                 && updatePasswordRequest.getNewPassword().equals(updatePasswordRequest.getRepeatedPassword())){
 
-            currentUser.setPassword(passwordEncoder.encode(updatePasswordRequest.getNewPassword()));
-            userRepository.save(currentUser);
+            user.setPassword(passwordEncoder.encode(updatePasswordRequest.getNewPassword()));
+            userRepository.save(user);
             log.info("Successfully updated password");
         }else {
             log.warn("Passwords entered incorrectly.");
@@ -67,12 +66,12 @@ public class UserService {
     }
 
     @Transactional
-    public void activate(String jwtKey){
-        if(jwtKey == null){
+    public void activate(String jwtActivateKey){
+        if(jwtActivateKey == null){
             log.warn("Activate key cannot be null.");
             throw new ActiveKeyNotValidException("Activate key cannot be null.");
         }
-        Map<String, Object> claimsMap = getClaimsMap(jwtKey);
+        Map<String, Object> claimsMap = getClaimsMap(jwtActivateKey);
         String simpleKey = claimsMap.get(claimSimpleKey).toString();
         Object expiration = claimsMap.get(claimExpiration);
         if (isExpired(expiration)){

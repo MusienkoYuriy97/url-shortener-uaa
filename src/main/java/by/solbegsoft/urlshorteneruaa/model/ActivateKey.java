@@ -2,6 +2,7 @@ package by.solbegsoft.urlshorteneruaa.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Schema(name = "ActivateKey(Unuseful in Controller)")
 @Entity
+@Builder
 @Data
 @AllArgsConstructor @NoArgsConstructor
 @Table(name = "activate_key")
