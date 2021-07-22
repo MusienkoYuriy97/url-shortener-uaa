@@ -1,4 +1,4 @@
-package by.solbegsoft.urlshorteneruaa.config;
+package by.solbegsoft.urlshorteneruaa.common;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

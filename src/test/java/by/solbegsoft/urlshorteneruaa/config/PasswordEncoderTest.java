@@ -5,18 +5,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static by.solbegsoft.urlshorteneruaa.util.UserConstant.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class SecurityConfigTest {
+class PasswordEncoderTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
-    private final String PASSWORD = "1234";
 
     @Test
     void passwordEncoder() {
-
-        String encode = passwordEncoder.encode(PASSWORD);
-        assertTrue(passwordEncoder.matches(PASSWORD, encode));
+        //encode
+        String encodedPassword = passwordEncoder.encode(USER_PASSWORD);
+        //assert
+        assertTrue(passwordEncoder.matches(USER_PASSWORD, encodedPassword));
     }
 }
