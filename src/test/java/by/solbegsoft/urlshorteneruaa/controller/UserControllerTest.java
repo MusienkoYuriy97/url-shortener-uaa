@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static by.solbegsoft.urlshorteneruaa.util.UserConstant.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.*;
@@ -32,12 +31,13 @@ class UserControllerTest {
     @Test
     void updatePassword() throws Exception {
         //when
+        String userJwtToken = objectCreator.userJwtToken();
         doNothing().when(userService).updatePassword(any(UpdatePasswordRequest.class));
         //then
         this.mockMvc
                 .perform(
                         put("/api/v1/user/password")
-                                .header("Authorization", BEARER_ADMIN_TOKEN)
+                                .header("Authorization", userJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updatePasswordRequest()))
                 )
@@ -47,12 +47,13 @@ class UserControllerTest {
     @Test
     void updatePasswordNotMatch() throws Exception {
         //when
+        String userJwtToken = objectCreator.userJwtToken();
         doThrow(UserDataException.class).when(userService).updatePassword(any(UpdatePasswordRequest.class));
         //then
         this.mockMvc
                 .perform(
                         put("/api/v1/user/password")
-                                .header("Authorization", BEARER_ADMIN_TOKEN)
+                                .header("Authorization", userJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updatePasswordRequest()))
                 )
@@ -61,9 +62,10 @@ class UserControllerTest {
 
     @Test
     void updatePasswordWithoutParam() throws Exception {
+        String userJwtToken = objectCreator.userJwtToken();
         this.mockMvc
                 .perform(put("/api/v1/user/password")
-                        .header("Authorization", BEARER_ADMIN_TOKEN))
+                        .header("Authorization", userJwtToken))
                 .andExpect(status().isBadRequest());
     }
 

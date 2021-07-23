@@ -8,8 +8,8 @@ values (
            'ACTIVE'
        ),
        (
-           'pavel@gmail.com',
-           'Pavel',
+           'musienko@gmail.com',
+           'Ivan',
            'Pavlov',
            '$2y$12$QKQ2d03.6SCPEQhLlaZusOJT9Q/ODqnvFHT6JCdpqvxKeXHa7KviG',
            'ROLE_USER',

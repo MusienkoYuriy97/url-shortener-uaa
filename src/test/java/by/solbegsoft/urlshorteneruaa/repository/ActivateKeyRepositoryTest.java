@@ -53,7 +53,7 @@ class ActivateKeyRepositoryTest {
         return User.builder()
                 .firstName(FIRST_USER_NAME)
                 .lastName(LAST_USER_NAME)
-                .email(USER_EMAIL)
+                .email(DB_TEST_EMAIL)
                 .password(passwordEncoder.encode(USER_PASSWORD))
                 .userRole(ROLE_USER)
                 .userStatus(BLOCKED)

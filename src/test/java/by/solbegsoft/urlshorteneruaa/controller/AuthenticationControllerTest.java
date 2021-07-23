@@ -13,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static by.solbegsoft.urlshorteneruaa.util.UserConstant.BEARER_ADMIN_TOKEN;
 import static by.solbegsoft.urlshorteneruaa.util.UserConstant.USER_EMAIL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -71,7 +70,8 @@ class AuthenticationControllerTest {
     @Test
     void login() throws Exception {
         //when
-        when(authenticationService.login(objectCreator.loginUserRequest())).thenReturn(BEARER_ADMIN_TOKEN);
+        String userJwtToken = objectCreator.userJwtToken();
+        when(authenticationService.login(objectCreator.loginUserRequest())).thenReturn(userJwtToken);
         //then
         this.mockMvc
                 .perform(
@@ -81,7 +81,7 @@ class AuthenticationControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/plain;charset=UTF-8"))
-                .andExpect(content().string(BEARER_ADMIN_TOKEN));
+                .andExpect(content().string(userJwtToken));
     }
 
     @Test

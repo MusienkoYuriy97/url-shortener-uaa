@@ -28,13 +28,14 @@ class AdminControllerTest {
     @Test
     void updateRole() throws Exception {
         //when
+        String adminJwtToken = objectCreator.adminJwtToken();
         when(adminService.isCurrentAdmin(any(String.class))).thenReturn(false);
         when(adminService.updateUserRole(any())).thenReturn(objectCreator.updateRoleResponse());
         //then
         this.mockMvc
                 .perform(
                         patch("/api/v1/admin/role")
-                                .header("Authorization", BEARER_ADMIN_TOKEN)
+                                .header("Authorization", adminJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updateRoleRequest()))
                 )
@@ -46,12 +47,13 @@ class AdminControllerTest {
     @Test
     void updateRoleIsCurrentAdmin() throws Exception {
         //when
+        String adminJwtToken = objectCreator.adminJwtToken();
         when(adminService.isCurrentAdmin(any(String.class))).thenReturn(true);
         //then
         this.mockMvc
                 .perform(
                         patch("/api/v1/admin/role")
-                                .header("Authorization", BEARER_ADMIN_TOKEN)
+                                .header("Authorization", adminJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updateRoleRequest()))
                 )
@@ -67,9 +69,10 @@ class AdminControllerTest {
 
     @Test
     void updateRoleIsUser() throws Exception {
+        String userJwtToken = objectCreator.userJwtToken();
         this.mockMvc
                 .perform(patch("/api/v1/admin/role")
-                                .header("Authorization", BEARER_USER_TOKEN)
+                                .header("Authorization", userJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updateRoleRequest()))
                 )
@@ -78,9 +81,10 @@ class AdminControllerTest {
 
     @Test
     void updateRoleWithoutParam() throws Exception {
+        String adminJwtToken = objectCreator.adminJwtToken();
         this.mockMvc
                 .perform(patch("/api/v1/admin/role")
-                        .header("Authorization", BEARER_ADMIN_TOKEN))
+                        .header("Authorization", adminJwtToken))
                 .andExpect(status().isBadRequest());
     }
 }

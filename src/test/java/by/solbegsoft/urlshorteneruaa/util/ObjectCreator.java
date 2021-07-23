@@ -3,11 +3,14 @@ package by.solbegsoft.urlshorteneruaa.util;
 import by.solbegsoft.urlshorteneruaa.dto.*;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
+import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
+import by.solbegsoft.urlshorteneruaa.security.JwtTokenProvider;
 import by.solbegsoft.urlshorteneruaa.service.EmailService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +18,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 import static by.solbegsoft.urlshorteneruaa.util.UserConstant.*;
 import static by.solbegsoft.urlshorteneruaa.util.UserRole.*;
@@ -28,6 +33,12 @@ public class ObjectCreator {
     private AuthenticationManager authenticationManager;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    @Value("${jwt.prefix}")
+    private String prefix;
 
     public UserCreateRequest userCreateRequest(){
         return UserCreateRequest.builder()
@@ -170,5 +181,19 @@ public class ObjectCreator {
     public String toJson(Object o) throws JsonProcessingException {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(o);
+    }
+
+    public String adminJwtToken(){
+        Optional<User> admin = userRepository.getByEmail(ADMIN_EMAIL);
+        return prefix + admin.map(user -> jwtTokenProvider.createToken(user.getUuid().toString(),
+                user.getEmail(),
+                user.getUserRole().name())).orElse(null);
+    }
+
+    public String userJwtToken(){
+        Optional<User> admin = userRepository.getByEmail(USER_EMAIL);
+        return prefix + admin.map(user -> jwtTokenProvider.createToken(user.getUuid().toString(),
+                user.getEmail(),
+                user.getUserRole().name())).orElse(null);
     }
 }
