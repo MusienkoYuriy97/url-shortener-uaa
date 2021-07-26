@@ -2,44 +2,25 @@ version: '2'
 
 services:
   uaa:
-    image: 'uaa'
-    networks:
-      - myapp
-    container_name: uaa-service
-    build:
-      context: .
+    image: '97musienko/uaa'
     ports:
     - 8080:8080
     depends_on:
       - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/url_shortener
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+    env_file:
+      - service.env
   url:
-    image: 'url'
-    networks:
-      - myapp
-    container_name: url-service
-    build:
-      context: /home/yuriymusienko/IdeaProjects/url-shortener-u/src/docker
+    image: '97musienko/url'
     ports:
       - 8081:8081
     depends_on:
       - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/url_shortener
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+    env_file:
+      - service.env
   db:
     image: 'postgres'
-    networks:
-      - myapp
-    environment:
-        - POSTGRES_DB=url_shortener
-        - POSTGRES_USER=postgres
-        - POSTGRES_PASSWORD=postgres
-networks:
-  myapp:
+    env_file:
+      - db.env
+
 
 

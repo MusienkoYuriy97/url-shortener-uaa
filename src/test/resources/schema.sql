@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS activate_key;
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE IF NOT EXISTS users(
     uuid UUID DEFAULT gen_random_uuid(),
     email VARCHAR (62) NOT NULL UNIQUE,

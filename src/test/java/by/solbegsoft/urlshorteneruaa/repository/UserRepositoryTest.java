@@ -38,7 +38,7 @@ class UserRepositoryTest {
 
     @Test
     void existsByEmailNotExist() {
-        assertFalse(userRepository.existsByEmail(ADMIN_EMAIL));
+        assertFalse(userRepository.existsByEmail(ADMIN_EMAIL+"hello"));
     }
 
     @Test
@@ -49,7 +49,7 @@ class UserRepositoryTest {
 
     @Test
     void getByEmailIsNull() {
-        Optional<User> byEmail = userRepository.getByEmail(ADMIN_EMAIL);
+        Optional<User> byEmail = userRepository.getByEmail(ADMIN_EMAIL + "hello");
         assertTrue(byEmail.isEmpty());
     }
     private User activeUser(){
