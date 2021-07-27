@@ -17,7 +17,7 @@ import javax.validation.Valid;
 @RequestMapping(value = "${api.path}"+"/user")
 @Tag(name = "UserController", description = "End points for update password and activate account after registration")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {

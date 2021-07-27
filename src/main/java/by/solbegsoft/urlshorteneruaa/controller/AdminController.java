@@ -17,7 +17,7 @@ import javax.validation.Valid;
 @RequestMapping(value = "${api.path}"+"/admin")
 @Tag(name = "AdminController", description = "End points for users who has role ADMIN")
 public class AdminController {
-    private AdminService adminService;
+    private final AdminService adminService;
 
     @Autowired
     public AdminController(AdminService adminService) {

@@ -40,8 +40,8 @@ public class EmailService {
     public static final String EMAIL_FROM = "yury.musienko@solbeg.com";
     public static final String EMAIL_SUBJECT_ACTIVATION_LINK   = "Activation Link";
 
-    private JavaMailSender javaMailSender;
-    private TemplateEngine templateEngine;
+    private final JavaMailSender javaMailSender;
+    private final TemplateEngine templateEngine;
 
     @Autowired
     public EmailService(JavaMailSender javaMailSender,
@@ -68,7 +68,7 @@ public class EmailService {
             messageHelper.setSubject(EMAIL_SUBJECT_ACTIVATION_LINK);
             messageHelper.setText(body,true);
             javaMailSender.send(mimeMessage);
-            log.debug("Send activated link to " + to);
+            log.debug("Send activated link to {}", to);
         } catch (MessagingException e) {
             e.printStackTrace();
         }

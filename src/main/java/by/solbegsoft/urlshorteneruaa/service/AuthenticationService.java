@@ -27,12 +27,12 @@ import static by.solbegsoft.urlshorteneruaa.util.UserStatus.BLOCKED;
 @Slf4j
 @Service
 public class AuthenticationService {
-    private UserRepository userRepository;
-    private ActivateKeyRepository activateKeyRepository;
-    private AuthenticationManager authenticationManager;
-    private JwtTokenProvider jwtTokenProvider;
-    private EmailService emailService;
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final ActivateKeyRepository activateKeyRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final EmailService emailService;
+    private final UserMapper userMapper;
 
     @Autowired
     public AuthenticationService(UserRepository userRepository,
@@ -59,11 +59,11 @@ public class AuthenticationService {
         User user = userMapper.toUser(userCreateRequest);
         user.setUserRole(ROLE_USER);
         user.setUserStatus(BLOCKED);
-        log.debug("Try save user " + user);
+        log.debug("Try save user {}", user);
         userRepository.save(user);
         //send activate key to email
         String simpleKey = saveSimpleKey(user.getEmail());
-        log.debug(String.format("Send email to email:%s; first name: %s; simpleKey:%s", user.getEmail(), user.getFirstName(), simpleKey));
+        log.debug("Send email to email:{}; first name: {}; simpleKey:{}", user.getEmail(), user.getFirstName(), simpleKey);
         emailService.sendEmail(user.getEmail(), user.getFirstName(), simpleKey);
 
         log.info("Successfully register a new user and send activate key");
@@ -84,7 +84,7 @@ public class AuthenticationService {
             user = getByEmailOrThrowException(loginUserRequest.getEmail());
             log.debug("Get by email:" + user);
         }catch (UserDataException ex){
-            log.warn(String.format("User with emil:%s doesn't exist", loginUserRequest.getEmail()));
+            log.warn("User with emil:{} doesn't exist", loginUserRequest.getEmail());
             throw new UsernameNotFoundException("Wrong email/password");
         }
 
@@ -98,7 +98,7 @@ public class AuthenticationService {
                        jwtTokenProvider.createToken(user.getUuid().toString(),
                                              user.getEmail(),
                                              user.getUserRole().name());
-        log.info("Successfully generate jwtToken for " + loginUserRequest.getEmail());
+        log.info("Successfully generate jwtToken for {}", loginUserRequest.getEmail());
         return jwtToken;
     }
 

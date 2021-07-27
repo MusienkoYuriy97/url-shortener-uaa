@@ -19,7 +19,7 @@ import javax.validation.Valid;
 @RequestMapping(value = "${api.path}"+"/auth")
 @Tag(name = "AuthenticationController", description = "End points for login and registration new account")
 public class AuthenticationController {
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @Autowired
     public AuthenticationController(AuthenticationService authenticationService) {

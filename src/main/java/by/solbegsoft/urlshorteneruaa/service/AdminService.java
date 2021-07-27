@@ -19,9 +19,9 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class AdminService {
-    private UserRepository userRepository;
-    private UserDetailServiceImpl userDetailService;
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserDetailServiceImpl userDetailService;
+    private final UserMapper userMapper;
 
     @Autowired
     public AdminService(UserRepository userRepository,
@@ -45,7 +45,7 @@ public class AdminService {
             log.warn("User uuid is null");
             throw new UserDataException("Email is null.");
         }
-        log.debug("Check" + uuid);
+        log.debug("Check admin {}", uuid);
         return userDetailService.getCurrentUser()
                 .getUuid().equals(UUID.fromString(uuid));
     }
@@ -55,7 +55,7 @@ public class AdminService {
         if (optionalUser.isPresent()){
             return optionalUser.get();
         }else {
-            log.warn("User with this uuid doesn't exist. Uuid:" + uuid);
+            log.warn("User with this uuid doesn't exist. Uuid: {}", uuid);
             throw new UserDataException("User with this uuid doesn't exist");
         }
     }

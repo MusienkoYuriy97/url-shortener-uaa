@@ -31,6 +31,7 @@ public class UserService {
     private String claimSimpleKey;
     @Value("${jwt.claimExpiration}")
     private String claimExpiration;
+
     private final UserRepository userRepository;
     private final ActivateKeyRepository activateKeyRepository;
     private final PasswordEncoder passwordEncoder;
