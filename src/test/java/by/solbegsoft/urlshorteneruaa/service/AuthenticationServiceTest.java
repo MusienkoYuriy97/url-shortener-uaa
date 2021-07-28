@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.Map;
 import java.util.Optional;
 
 import static by.solbegsoft.urlshorteneruaa.util.UserConstant.*;
@@ -69,9 +71,10 @@ class AuthenticationServiceTest {
         when(userRepository.getByEmail(USER_EMAIL)).thenReturn(Optional.of(activeUser));
         objectCreator.buildSecurityContext();
         //call method
-        String jwtToken = authenticationService.login(loginUserRequest);
+        Map<String, String> tokenMap = authenticationService.login(loginUserRequest);
         //assert
-        assertTrue(jwtToken.startsWith("Bearer "));
+        assertTrue(tokenMap.containsKey("access_token"));
+        assertNotNull(tokenMap.get("access_token"));
     }
 
     @Test

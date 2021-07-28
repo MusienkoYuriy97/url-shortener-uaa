@@ -21,6 +21,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 import static by.solbegsoft.urlshorteneruaa.util.UserRole.ROLE_USER;
 import static by.solbegsoft.urlshorteneruaa.util.UserStatus.BLOCKED;
 
@@ -78,7 +80,7 @@ public class AuthenticationService {
         return activateKeyRepository.save(activateKey).getSimpleKey();
     }
 
-    public String login(LoginUserRequest loginUserRequest){
+    public Map<String, String> login(LoginUserRequest loginUserRequest){
         User user;
         try {
             user = getByEmailOrThrowException(loginUserRequest.getEmail());
@@ -94,12 +96,11 @@ public class AuthenticationService {
         }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.getEmail(),
                                                                                     loginUserRequest.getPassword()));
-        String jwtToken = jwtTokenProvider.getPrefix() +
-                       jwtTokenProvider.createToken(user.getUuid().toString(),
+        Map<String, String> tokenMap = jwtTokenProvider.createToken(user.getUuid().toString(),
                                              user.getEmail(),
                                              user.getUserRole().name());
         log.info("Successfully generate jwtToken for {}", loginUserRequest.getEmail());
-        return jwtToken;
+        return tokenMap;
     }
 
     private User getByEmailOrThrowException(String email){

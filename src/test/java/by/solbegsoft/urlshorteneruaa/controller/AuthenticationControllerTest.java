@@ -13,6 +13,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
+
 import static by.solbegsoft.urlshorteneruaa.util.UserConstant.USER_EMAIL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -70,8 +72,7 @@ class AuthenticationControllerTest {
     @Test
     void login() throws Exception {
         //when
-        String userJwtToken = objectCreator.userJwtToken();
-        when(authenticationService.login(objectCreator.loginUserRequest())).thenReturn(userJwtToken);
+        when(authenticationService.login(objectCreator.loginUserRequest())).thenReturn(new HashMap<>());
         //then
         this.mockMvc
                 .perform(
@@ -79,9 +80,7 @@ class AuthenticationControllerTest {
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.loginUserRequest()))
                 )
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=UTF-8"))
-                .andExpect(content().string(userJwtToken));
+                .andExpect(status().isOk());
     }
 
     @Test

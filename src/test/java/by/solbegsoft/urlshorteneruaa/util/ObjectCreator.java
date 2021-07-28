@@ -185,15 +185,20 @@ public class ObjectCreator {
 
     public String adminJwtToken(){
         Optional<User> admin = userRepository.getByEmail(ADMIN_EMAIL);
-        return prefix + admin.map(user -> jwtTokenProvider.createToken(user.getUuid().toString(),
-                user.getEmail(),
-                user.getUserRole().name())).orElse(null);
+
+        return prefix + admin.map(
+                user -> jwtTokenProvider.createToken(user.getUuid().toString(), user.getEmail(), user.getUserRole().name())
+                        .get("access_token")
+                )
+                .orElse(null);
     }
 
     public String userJwtToken(){
         Optional<User> admin = userRepository.getByEmail(USER_EMAIL);
-        return prefix + admin.map(user -> jwtTokenProvider.createToken(user.getUuid().toString(),
-                user.getEmail(),
-                user.getUserRole().name())).orElse(null);
+        return prefix + admin.map(
+                user -> jwtTokenProvider.createToken(user.getUuid().toString(), user.getEmail(), user.getUserRole().name())
+                        .get("access_token")
+                )
+                .orElse(null);
     }
 }

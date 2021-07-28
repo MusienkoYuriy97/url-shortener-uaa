@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(summary = "Login in account")
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(example = "Bearer {token}"))),
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(example = "access_token:{jwtToken}"))),
         @ApiResponse(responseCode = "400", description = "Fields entered incorrectly", content = @Content),
         @ApiResponse(responseCode = "403", description = "Account doesn't active", content = @Content),
         @ApiResponse(responseCode = "403", description = "Wrong password/email", content = @Content)})
