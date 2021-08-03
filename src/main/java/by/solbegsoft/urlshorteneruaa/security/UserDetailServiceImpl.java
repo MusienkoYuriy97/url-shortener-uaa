@@ -57,8 +57,11 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     public User getCurrentUser(){
         Optional<String> currentUserEmail = getCurrentEmail();
-        if (currentUserEmail.isPresent() & userRepository.existsByEmail(currentUserEmail.get())){
-            return userRepository.getByEmail(currentUserEmail.get()).get();
+        if (currentUserEmail.isPresent()){
+            Optional<User> optionalUser = userRepository.getByEmail(currentUserEmail.get());
+            if (optionalUser.isPresent()){
+                return optionalUser.get();
+            }
         }
         throw new UserDataException("User doesn't exist");
     }

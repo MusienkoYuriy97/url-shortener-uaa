@@ -6,15 +6,12 @@ import by.solbegsoft.urlshorteneruaa.client.util.BaseUrls;
 import by.solbegsoft.urlshorteneruaa.security.UserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -22,10 +19,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UrlService {
     private final UserDetailServiceImpl userDetailService;
-    @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private BaseUrls baseUrls;
+    private final RestTemplate restTemplate;
+    private final BaseUrls baseUrls;
 
 
     public Url save(UrlCreateRequest request) {
@@ -34,9 +29,9 @@ public class UrlService {
         return restTemplate.postForObject(baseUrls.saveUrlPost(), request, Url.class);
     }
 
-    public List<Url> getAll() {
+    public Object getAll() {
         UUID uuid = userDetailService.getCurrentUser().getUuid();
-        return restTemplate.getForObject(baseUrls.getAllUrlByUuidGet() + uuid, List.class);
+        return restTemplate.getForObject(baseUrls.getAllUrlByUuidGet() + uuid, Object.class);
     }
 
     public URI getLocation(String shortUrl) {

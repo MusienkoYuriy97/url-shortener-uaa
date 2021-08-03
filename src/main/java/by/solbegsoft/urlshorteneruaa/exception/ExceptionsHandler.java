@@ -45,7 +45,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    protected ResponseEntity<?> auth(Exception e) {
+    protected ResponseEntity<?> auth() {
         return new ResponseEntity<>("Wrong email/password", HttpStatus.FORBIDDEN);
     }
 

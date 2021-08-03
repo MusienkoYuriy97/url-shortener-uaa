@@ -14,7 +14,7 @@ public class WhiteList implements InitializingBean {
     private Set<String> whiteList;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet(){
         whiteList = Set.of(
                 "/swagger-ui.html",
                 "/v3/api-docs/**",
