@@ -1,5 +1,6 @@
 package by.solbegsoft.urlshorteneruaa.client.controller;
 
+import by.solbegsoft.urlshorteneruaa.client.service.UrlService;
 import by.solbegsoft.urlshorteneruaa.client.util.BaseUrls;
 import by.solbegsoft.urlshorteneruaa.client.dto.UrlCreateRequest;
 import by.solbegsoft.urlshorteneruaa.client.model.Url;
@@ -25,36 +26,29 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "UrlController", description = "End points for url")
 public class UrlController {
-    private final UserDetailServiceImpl userDetailService;
-    @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private BaseUrls baseUrls;
+    private final UrlService urlService;
+
 
     @PostMapping("/create")
     @ApiPostSaveUrl
     public ResponseEntity<?> save(@Valid @RequestBody UrlCreateRequest request){
-        final UUID uuid = userDetailService.getCurrentUser().getUuid();
-        request.setUserUuid(uuid.toString());
-        return new ResponseEntity<>(restTemplate.postForObject(baseUrls.saveUrlPost(), request, Url.class),
+        return new ResponseEntity<>(urlService.save(request),
                 HttpStatus.CREATED);
     }
 
     @GetMapping("/getall")
     @ApiPostSaveUrl
     public ResponseEntity<?> getAll(){
-        final UUID uuid = userDetailService.getCurrentUser().getUuid();
-        return new ResponseEntity<>(restTemplate.getForObject(baseUrls.getAllUrlByUuidGet() + uuid, List.class),
+        return new ResponseEntity<>(urlService.getAll(),
                 HttpStatus.CREATED);
     }
 
     @GetMapping("/redirect/{shortUrl}")
     @ApiGetRedirectUrl
     public ResponseEntity<?> redirect(@PathVariable String shortUrl){
-        ResponseEntity<Object> response = restTemplate.exchange(baseUrls.redirectUrlGet() + shortUrl, HttpMethod.GET, null, Object.class);
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
-                .location(Objects.requireNonNull(response.getHeaders().getLocation()))
+                .location(Objects.requireNonNull(urlService.getLocation(shortUrl)))
                 .build();
     }
 }
