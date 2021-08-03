@@ -1,9 +1,8 @@
 package by.solbegsoft.urlshorteneruaa.security;
 
-import by.solbegsoft.urlshorteneruaa.exception.NoActivatedAccountException;
 import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.UserStatus;
+import by.solbegsoft.urlshorteneruaa.util.UserStatus;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +25,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    //TODO
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository
@@ -43,7 +41,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         );
     }
 
-    public static Optional<String> getCurrentUserEmail() {
+    public static Optional<String> getCurrentEmail() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
                 .map(authentication -> {
@@ -58,7 +56,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     }
 
     public User getCurrentUser(){
-        Optional<String> currentUserEmail = getCurrentUserEmail();
+        Optional<String> currentUserEmail = getCurrentEmail();
         if (currentUserEmail.isPresent() & userRepository.existsByEmail(currentUserEmail.get())){
             return userRepository.getByEmail(currentUserEmail.get()).get();
         }

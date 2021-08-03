@@ -6,10 +6,10 @@ import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
 import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.ActivateKey;
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.UserStatus;
-import by.solbegsoft.urlshorteneruaa.model.dto.AuthenticationRequestDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.util.UserStatus;
+import by.solbegsoft.urlshorteneruaa.dto.LoginUserRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
 import by.solbegsoft.urlshorteneruaa.repository.ActivateKeyRepository;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.JwtTokenProvider;
@@ -17,24 +17,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.Map;
 
-import static by.solbegsoft.urlshorteneruaa.model.UserRole.*;
-import static by.solbegsoft.urlshorteneruaa.model.UserStatus.BLOCKED;
+import static by.solbegsoft.urlshorteneruaa.util.UserRole.ROLE_USER;
+import static by.solbegsoft.urlshorteneruaa.util.UserStatus.BLOCKED;
 
 @Slf4j
 @Service
-@Transactional
 public class AuthenticationService {
-    private UserRepository userRepository;
-    private ActivateKeyRepository activateKeyRepository;
-    private AuthenticationManager authenticationManager;
-    private JwtTokenProvider jwtTokenProvider;
-    private EmailService emailService;
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final ActivateKeyRepository activateKeyRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final EmailService emailService;
+    private final UserMapper userMapper;
 
     @Autowired
     public AuthenticationService(UserRepository userRepository,
@@ -51,46 +51,65 @@ public class AuthenticationService {
         this.userMapper = userMapper;
     }
 
-    public UserResponseDto save(UserCreateDto userCreateDto){
-        if (userRepository.existsByEmail(userCreateDto.getEmail())) {
+    @Transactional
+    public UserCreateResponse save(UserCreateRequest userCreateRequest){
+        if (userRepository.existsByEmail(userCreateRequest.getEmail())) {
             log.warn("User with this email already exist");
             throw new UserDataException("User with this email already exist");
         }
-        User user = userMapper.toUser(userCreateDto);
+        //user save
+        User user = userMapper.toUser(userCreateRequest);
         user.setUserRole(ROLE_USER);
         user.setUserStatus(BLOCKED);
-        log.debug("Try save user " + user);
-        User savedUser = userRepository.save(user);
-        log.debug("Saved user " + savedUser);
-        String email = savedUser.getEmail();
-        emailService.sendEmail(email, savedUser.getFirstName(), saveActivateKey(email));
-        UserResponseDto userResponseDto = userMapper.toDto(savedUser);
-        return userResponseDto;
+        log.debug("Try save user {}", user);
+        userRepository.save(user);
+        //send activate key to email
+        String simpleKey = saveSimpleKey(user.getEmail());
+        log.debug("Send email to email:{}; first name: {}; simpleKey:{}", user.getEmail(), user.getFirstName(), simpleKey);
+        emailService.sendEmail(user.getEmail(), user.getFirstName(), simpleKey);
+
+        log.info("Successfully register a new user and send activate key");
+        return userMapper.toDto(user);
     }
 
-    private String saveActivateKey(String email){
-        User user = userRepository.getByEmail(email).get();
+    private String saveSimpleKey(String email){
+        User user = getByEmailOrThrowException(email);
         ActivateKey activateKey = new ActivateKey();
-        activateKey.setKey(StringGenerator.generate(12));
+        activateKey.setSimpleKey(StringGenerator.generate(12));
         activateKey.setUser(user);
-        ActivateKey save = activateKeyRepository.save(activateKey);
-        log.info("Successfully added activated key for " + user.getEmail());
-        return save.getKey();
+        return activateKeyRepository.save(activateKey).getSimpleKey();
     }
 
-    public String login(AuthenticationRequestDto dto) throws NoActivatedAccountException {
-        Optional<User> user = userRepository.getByEmail(dto.getEmail());
+    public Map<String, String> login(LoginUserRequest loginUserRequest){
+        User user;
+        try {
+            user = getByEmailOrThrowException(loginUserRequest.getEmail());
+            log.debug("Get by email:" + user);
+        }catch (UserDataException ex){
+            log.warn("User with emil:{} doesn't exist", loginUserRequest.getEmail());
+            throw new UsernameNotFoundException("Wrong email/password");
+        }
 
-        if (user.isPresent() && UserStatus.BLOCKED.equals(user.get().getUserStatus())){
+        if (UserStatus.BLOCKED.equals(user.getUserStatus())){
             log.warn("Account is BLOCKED.");
             throw new NoActivatedAccountException("Account not active.");
         }
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(),dto.getPassword()));
-        String token = jwtTokenProvider.getPrefix() +
-                       jwtTokenProvider.createToken(user.get().getId().toString(),
-                                             user.get().getEmail(),
-                                             user.get().getUserRole().name());
-        log.info("Successfully generate token for " + dto.getEmail());
-        return token;
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.getEmail(),
+                                                                                    loginUserRequest.getPassword()));
+        Map<String, String> tokenMap = jwtTokenProvider.createToken(user.getUuid().toString(),
+                                             user.getEmail(),
+                                             user.getUserRole().name());
+        log.info("Successfully generate jwtToken for {}", loginUserRequest.getEmail());
+        return tokenMap;
+    }
+
+    private User getByEmailOrThrowException(String email){
+        if (email == null){
+            throw new UserDataException("Email is null.");
+        }
+
+        return userRepository
+                .getByEmail(email)
+                .orElseThrow(() -> new UserDataException("User with this email doesn't exist"));
     }
 }

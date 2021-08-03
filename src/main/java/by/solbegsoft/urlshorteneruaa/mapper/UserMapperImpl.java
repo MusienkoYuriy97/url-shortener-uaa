@@ -1,11 +1,16 @@
 package by.solbegsoft.urlshorteneruaa.mapper;
 
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
+import by.solbegsoft.urlshorteneruaa.util.UserRole;
+import by.solbegsoft.urlshorteneruaa.util.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import static by.solbegsoft.urlshorteneruaa.util.UserRole.*;
+import static by.solbegsoft.urlshorteneruaa.util.UserStatus.*;
 
 @Component
 public class UserMapperImpl implements UserMapper{
@@ -13,23 +18,23 @@ public class UserMapperImpl implements UserMapper{
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User toUser(UserCreateDto dto) {
+    public User toUser(UserCreateRequest userCreateRequest) {
         User user = new User();
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setFirstName(userCreateRequest.getFirstName());
+        user.setLastName(userCreateRequest.getLastName());
+        user.setEmail(userCreateRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(userCreateRequest.getPassword()));
         return user;
     }
 
     @Override
-    public UserResponseDto toDto(User user) {
-        UserResponseDto dto = new UserResponseDto();
+    public UserCreateResponse toDto(User user) {
+        UserCreateResponse dto = new UserCreateResponse();
         dto.setEmail(user.getEmail());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
-        dto.setUserStatus(user.getUserStatus().name());
-        dto.setUserRole(user.getUserRole().name());
+        dto.setUserStatus(user.getUserStatus());
+        dto.setUserRole(user.getUserRole());
         return dto;
     }
 }

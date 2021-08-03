@@ -9,7 +9,9 @@ class StringGeneratorTest {
 
     @Test
     void generate() {
+        //generate
         String generate = StringGenerator.generate(LENGTH);
+        //assert
         assertTrue(generate.matches("^[a-zA-Z0-9]*$")
                 && (generate.length() == LENGTH));
     }

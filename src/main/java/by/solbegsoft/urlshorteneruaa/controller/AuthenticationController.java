@@ -1,21 +1,25 @@
 package by.solbegsoft.urlshorteneruaa.controller;
 
-import by.solbegsoft.urlshorteneruaa.model.dto.AuthenticationRequestDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.LoginUserRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
 import by.solbegsoft.urlshorteneruaa.service.AuthenticationService;
+import by.solbegsoft.urlshorteneruaa.swagger.ApiPostLogin;
+import by.solbegsoft.urlshorteneruaa.swagger.ApiPostRegistration;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
+@Slf4j
 @RestController
-@RequestMapping(value = "${api.path}"+"auth")
+@RequestMapping(value = "${api.path}"+"/auth")
+@Tag(name = "AuthenticationController", description = "End points for login and registration new account")
 public class AuthenticationController {
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @Autowired
     public AuthenticationController(AuthenticationService authenticationService) {
@@ -23,15 +27,18 @@ public class AuthenticationController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> save(@Valid @RequestBody UserCreateDto userCreateDto){
-        UserResponseDto user = authenticationService.save(userCreateDto);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    @PreAuthorize("!isAuthenticated()")
+    @ApiPostRegistration
+    public ResponseEntity<?> registration(@Valid @RequestBody UserCreateRequest userCreateRequest){
+        return new ResponseEntity<>(authenticationService.save(userCreateRequest),
+                HttpStatus.CREATED);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @PreAuthorize("!isAuthenticated()")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDto request){
-        String token = authenticationService.login(request);
-        return new ResponseEntity<>(token, HttpStatus.OK);
+    @ApiPostLogin
+    public ResponseEntity<?> login(@RequestBody LoginUserRequest loginUserRequest){
+        return new ResponseEntity<>(authenticationService.login(loginUserRequest),
+                HttpStatus.OK);
     }
 }

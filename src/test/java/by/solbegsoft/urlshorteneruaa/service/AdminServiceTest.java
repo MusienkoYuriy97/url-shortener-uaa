@@ -1,97 +1,66 @@
 package by.solbegsoft.urlshorteneruaa.service;
 
-import by.solbegsoft.urlshorteneruaa.exception.UserDataException;
-import by.solbegsoft.urlshorteneruaa.mapper.UserMapper;
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.dto.UpdateRoleUserDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UpdateRoleRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
 import by.solbegsoft.urlshorteneruaa.repository.UserRepository;
 import by.solbegsoft.urlshorteneruaa.security.UserDetailServiceImpl;
+import by.solbegsoft.urlshorteneruaa.util.ObjectCreator;
 import org.junit.jupiter.api.*;
-import org.mockito.BDDMockito;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import java.util.Optional;
 
-import static by.solbegsoft.urlshorteneruaa.model.UserRole.*;
-import static by.solbegsoft.urlshorteneruaa.model.UserStatus.*;
+import static by.solbegsoft.urlshorteneruaa.util.UserConstant.*;
+import static by.solbegsoft.urlshorteneruaa.util.UserRole.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class AdminServiceTest {
-    @Mock
+    @MockBean
     private UserRepository userRepository;
-    @Mock
+    @MockBean
     private UserDetailServiceImpl userDetailService;
     @Autowired
-    private UserMapper userMapper;
     private AdminService adminService;
-
-    @BeforeEach
-    void setConstruct() {
-        MockitoAnnotations.initMocks(this);
-        adminService = new AdminService(userRepository, userDetailService, userMapper);
-    }
-
-    @BeforeEach
-    void setUser() {
-        User admin = User.builder()
-                .userRole(ROLE_ADMIN)
-                .email("admin@gmail.com")
-                .build();
-
-        User user = User.builder()
-                .email("user@gmail.com")
-                .userRole(ROLE_USER)
-                .userStatus(ACTIVE)
-                .build();
-
-        BDDMockito
-                .given(userDetailService.getCurrentUser())
-                .willReturn(admin);
-        BDDMockito
-                .given(userRepository.existsByEmail("user@gmail.com"))
-                .willReturn(true);
-        BDDMockito
-                .given(userRepository.getByEmail("user@gmail.com"))
-                .willReturn(Optional.of(user));
-        BDDMockito
-                .given(userRepository.save(user))
-                .willReturn(user);
-    }
+    @Autowired
+    private ObjectCreator objectCreator;
 
     @Test
     void updateUserRole() {
-        UpdateRoleUserDto dto = new UpdateRoleUserDto();
-        dto.setEmail("user@gmail.com");
-        dto.setNewRole("ROLE_ADMIN");
-        UserResponseDto response = adminService.updateUserRole(dto);
-
-        assertEquals(dto.getNewRole(), response.getUserRole());
-    }
-
-    @Test
-    void updateUserRoleThrowException() {
-        UpdateRoleUserDto dto = new UpdateRoleUserDto();
-        dto.setEmail("user@gmail.com");
-        dto.setNewRole("ROLE_USER");
-
-        assertThrows(UserDataException.class, () -> adminService.updateUserRole(dto));
+        //mock
+        User user = objectCreator.activeUser();
+        UpdateRoleRequest updateRoleRequest = objectCreator.updateRoleRequest();
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        //call service
+        UserCreateResponse response = adminService.updateUserRole(updateRoleRequest);
+        //assert
+        assertEquals(ROLE_USER, response.getUserRole());
     }
 
     @Test
     void isCurrentUser(){
-        boolean currentAdmin = adminService.isCurrentAdmin("admin@gmail.com");
-
-        assertTrue(currentAdmin);
+        //mock
+        User currentAdmin = objectCreator.admin();
+        when(userDetailService.getCurrentUser()).thenReturn(currentAdmin);
+        //call service
+        boolean isCurrentAdmin = adminService.isCurrentAdmin(ADMIN_UUID.toString());
+        //assert
+        assertTrue(isCurrentAdmin);
     }
 
     @Test
     void notCurrentUser(){
-        boolean currentAdmin = adminService.isCurrentAdmin("user@gmail.com");
-
-        assertFalse(currentAdmin);
+        //mock
+        User currentAdmin = objectCreator.admin();
+        when(userDetailService.getCurrentUser()).thenReturn(currentAdmin);
+        //call service
+        boolean isCurrentAdmin = adminService.isCurrentAdmin(USER_UUID.toString());
+        //assert
+        assertFalse(isCurrentAdmin);
     }
 }

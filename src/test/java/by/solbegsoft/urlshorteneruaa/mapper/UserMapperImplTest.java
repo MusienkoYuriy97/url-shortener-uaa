@@ -1,21 +1,20 @@
 package by.solbegsoft.urlshorteneruaa.mapper;
 
 import by.solbegsoft.urlshorteneruaa.model.User;
-import by.solbegsoft.urlshorteneruaa.model.UserRole;
-import by.solbegsoft.urlshorteneruaa.model.UserStatus;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserCreateDto;
-import by.solbegsoft.urlshorteneruaa.model.dto.UserResponseDto;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateRequest;
+import by.solbegsoft.urlshorteneruaa.dto.UserCreateResponse;
+import by.solbegsoft.urlshorteneruaa.util.ObjectCreator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static by.solbegsoft.urlshorteneruaa.model.UserRole.*;
-import static by.solbegsoft.urlshorteneruaa.model.UserStatus.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserMapperImplTest {
+    @Autowired
+    private ObjectCreator objectCreator;
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -23,33 +22,28 @@ class UserMapperImplTest {
 
     @Test
     void toUser() {
-        UserCreateDto dto = new UserCreateDto();
-        dto.setFirstName("Yuriy");
-        dto.setLastName("Musienko");
-        dto.setEmail("mus@gmail.com");
-        dto.setPassword("1234");
-        User user = userMapper.toUser(dto);
-
-        assertEquals(dto.getFirstName(), user.getFirstName());
-        assertEquals(dto.getLastName(), user.getLastName());
-        assertEquals(dto.getEmail(), user.getEmail());
-        assertTrue(passwordEncoder.matches(dto.getPassword(), user.getPassword()));
+        //obj
+        UserCreateRequest userCreateRequest = objectCreator.userCreateRequest();
+        //call method
+        User user = userMapper.toUser(userCreateRequest);
+        //assert
+        assertEquals(userCreateRequest.getFirstName(), user.getFirstName());
+        assertEquals(userCreateRequest.getLastName(), user.getLastName());
+        assertEquals(userCreateRequest.getEmail(), user.getEmail());
+        assertTrue(passwordEncoder.matches(userCreateRequest.getPassword(), user.getPassword()));
     }
 
     @Test
     void toDto() {
-        User user = new User();
-        user.setFirstName("Yuriy");
-        user.setLastName("Musienko");
-        user.setEmail("mus@gmail.com");
-        user.setUserStatus(ACTIVE);
-        user.setUserRole(ROLE_USER);
-        UserResponseDto dto = userMapper.toDto(user);
-
-        assertEquals(user.getFirstName(), dto.getFirstName());
-        assertEquals(user.getLastName(), dto.getLastName());
-        assertEquals(user.getEmail(), dto.getEmail());
-        assertEquals(user.getUserRole().name(), dto.getUserRole());
-        assertEquals(user.getUserStatus().name(), dto.getUserStatus());
+        //obj
+        User user = objectCreator.blockedUser();
+        //call method
+        UserCreateResponse userCreateResponse = userMapper.toDto(user);
+        //assert
+        assertEquals(user.getFirstName(), userCreateResponse.getFirstName());
+        assertEquals(user.getLastName(), userCreateResponse.getLastName());
+        assertEquals(user.getEmail(), userCreateResponse.getEmail());
+        assertEquals(user.getUserRole(), userCreateResponse.getUserRole());
+        assertEquals(user.getUserStatus(), userCreateResponse.getUserStatus());
     }
 }

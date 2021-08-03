@@ -15,6 +15,8 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
@@ -38,18 +40,21 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String userId, String email, String userRole){
+    public Map<String, String> createToken(String userId, String email, String userRole){
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("userRole", userRole);
         claims.put("id",userId);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds * 1000);
-        return Jwts.builder()
+        final String access_token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("access_token", access_token);
+        return tokenMap;
     }
 
     public boolean validateToken(String token){
