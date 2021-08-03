@@ -8,11 +8,15 @@ public class BaseUrls{
     @Value("${rest.template.url}")
     private String BASE_URL;
 
-    public String redirectUrlPost(String shortUrl){
-        return BASE_URL + "/" + shortUrl;
+    public String redirectUrlGet(){
+        return BASE_URL + "/url/redirect/";
     }
 
-    public String saveUrlGet(){
-        return BASE_URL;
+    public String saveUrlPost(){
+        return BASE_URL + "/url/save";
+    }
+
+    public String getAllUrlByUuidGet(){
+        return BASE_URL + "/url/getall/";
     }
 }

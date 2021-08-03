@@ -1,5 +1,5 @@
 FROM maven:latest AS build
-COPY docker /url-shortener-uaa
+COPY . /url-shortener-uaa
 WORKDIR /url-shortener-uaa
 RUN mvn clean package -DskipTests
 
