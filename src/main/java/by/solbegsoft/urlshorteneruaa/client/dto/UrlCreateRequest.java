@@ -12,4 +12,5 @@ public class UrlCreateRequest {
     @Schema(example = "google.com")
     @NotNull @NotBlank
     private String originUrl;
+    private String userUuid;
 }

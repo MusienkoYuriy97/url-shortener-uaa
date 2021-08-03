@@ -21,6 +21,7 @@ public class WhiteList implements InitializingBean {
                 "/configuration/ui",
                 "/swagger-ui/**",
                 apiPath + "/auth/login",
+                apiPath + "/url/redirect/**",
                 apiPath + "/auth/registration",
                 apiPath + "/user/activate/{activateKey}"
         );

@@ -25,14 +25,14 @@ public class UrlController {
     @Autowired
     private BaseUrls baseUrls;
 
-    @PostMapping
+    @PostMapping("/create")
     @ApiPostSaveUrl
-    public ResponseEntity<?> save(@Valid @RequestBody UrlCreateRequest urlCreateRequest){
-        return new ResponseEntity<>(restTemplate.postForObject(baseUrls.saveUrlGet(), urlCreateRequest, Url.class),
+    public ResponseEntity<?> save(@Valid @RequestBody UrlCreateRequest request){
+        return new ResponseEntity<>(restTemplate.postForObject(baseUrls.saveUrlGet(), request, Url.class),
                 HttpStatus.CREATED);
     }
 
-    @GetMapping("/{shortUrl}")
+    @GetMapping("/redirect/{shortUrl}")
     @ApiGetRedirectUrl
     public ResponseEntity<?> redirect(@PathVariable String shortUrl){
         ResponseEntity<Object> response = restTemplate.exchange(baseUrls.redirectUrlPost(shortUrl), HttpMethod.GET, null, Object.class);
