@@ -72,7 +72,7 @@ public class AuthenticationService {
         return userMapper.toDto(user);
     }
 
-    private String saveSimpleKey(String email){
+    public String saveSimpleKey(String email){
         User user = getByEmailOrThrowException(email);
         ActivateKey activateKey = new ActivateKey();
         activateKey.setSimpleKey(StringGenerator.generate(12));

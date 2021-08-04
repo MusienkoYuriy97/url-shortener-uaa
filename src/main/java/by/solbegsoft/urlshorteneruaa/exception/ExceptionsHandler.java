@@ -1,7 +1,5 @@
 package by.solbegsoft.urlshorteneruaa.exception;
 
-import by.solbegsoft.urlshorteneruaa.client.exception.UrlDataException;
-import by.solbegsoft.urlshorteneruaa.client.exception.UrlNotFoundException;
 import lombok.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -57,15 +55,5 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NoActivatedAccountException.class)
     protected ResponseEntity<?> noActivated(Exception e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(UrlDataException.class)
-    protected ResponseEntity<?> urlData(Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(UrlNotFoundException.class)
-    protected ResponseEntity<?> urlNotFound(Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

@@ -23,7 +23,7 @@ public class WhiteList implements InitializingBean {
                 apiPath + "/auth/login",
                 apiPath + "/url/redirect/**",
                 apiPath + "/auth/registration",
-                apiPath + "/user/activate/{activateKey}"
+                apiPath + "/user/activate/**"
         );
     }
 

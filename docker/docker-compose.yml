@@ -7,7 +7,6 @@ services:
     - 8080:8080
     depends_on:
       - db
-      - url
     env_file:
       - service.env
   url:
@@ -16,6 +15,7 @@ services:
       - 8081:8081
     depends_on:
       - db
+      - uaa
     env_file:
       - service.env
   db:

@@ -40,10 +40,10 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public Map<String, String> createToken(String userId, String email, String userRole){
+    public Map<String, String> createToken(String userUuid, String email, String userRole){
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("userRole", userRole);
-        claims.put("id",userId);
+        claims.put("uuid", userUuid);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds * 1000);
         final String access_token = Jwts.builder()

@@ -39,4 +39,12 @@ public class UserController {
         return new ResponseEntity<>("Successful activate account.",
                 HttpStatus.ACCEPTED);
     }
+
+    @PostMapping("/activate/reset/{jwtActivateKey}")
+    @ApiGetActivate
+    public ResponseEntity<?> resetActivateKey(@PathVariable String jwtActivateKey){
+        userService.resetActivateKey(jwtActivateKey);
+        return new ResponseEntity<>("Successful reset activation key.",
+                HttpStatus.CREATED);
+    }
 }

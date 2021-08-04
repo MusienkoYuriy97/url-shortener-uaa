@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Schema(name = "ActivateKey(Unuseful in Controller)")
@@ -26,4 +28,12 @@ public class ActivateKey {
     private String simpleKey;
     @OneToOne
     private User user;
+    @Column(name = "created_at", nullable = false)
+    @Schema(example = "")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void dateInit(){
+        createdAt = LocalDateTime.now();
+    }
 }
