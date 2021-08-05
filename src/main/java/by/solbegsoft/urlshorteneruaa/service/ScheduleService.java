@@ -18,15 +18,14 @@ public class ScheduleService {
     private final ActivateKeyRepository activateKeyRepository;
     private final UserRepository userRepository;
 
-    @Scheduled(initialDelay = 5000, fixedDelay = 60000*60*24)
+    @Scheduled(initialDelay = 5000, fixedDelay = 60000*24*10)
     public void dropOldActivateKey(){
         log.info("Delete old activate key from database");
-        List<ActivateKey> allActivateKey = activateKeyRepository.findAll();
+        List<ActivateKey> allActivateKey = activateKeyRepository.findAllByCreatedAtBefore(LocalDateTime.now().minusDays(10));
+        log.info("{}", allActivateKey);
         for (ActivateKey activateKey : allActivateKey) {
-            if (activateKey.getCreatedAt().plusDays(10).isBefore(LocalDateTime.now())){
-                activateKeyRepository.deleteById(activateKey.getUuid());
-                userRepository.deleteById(activateKey.getUser().getUuid());
-            }
+            activateKeyRepository.deleteById(activateKey.getUuid());
+            userRepository.deleteById(activateKey.getUser().getUuid());
         }
     }
 }
