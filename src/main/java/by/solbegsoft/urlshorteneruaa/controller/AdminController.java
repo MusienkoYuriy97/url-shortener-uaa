@@ -14,7 +14,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "${api.path}"+"/admin")
+@RequestMapping("/admin")
 @Tag(name = "AdminController", description = "End points for users who has role ADMIN")
 public class AdminController {
     private final AdminService adminService;

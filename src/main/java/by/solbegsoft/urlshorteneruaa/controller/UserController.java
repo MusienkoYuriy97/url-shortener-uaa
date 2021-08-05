@@ -14,7 +14,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "${api.path}"+"/user")
+@RequestMapping("/user")
 @Tag(name = "UserController", description = "End points for update password and activate account after registration")
 public class UserController {
     private final UserService userService;

@@ -34,7 +34,7 @@ class AdminControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        patch("/api/v1/admin/role")
+                        patch("/admin/role")
                                 .header("Authorization", adminJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updateRoleRequest()))
@@ -52,7 +52,7 @@ class AdminControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        patch("/api/v1/admin/role")
+                        patch("/admin/role")
                                 .header("Authorization", adminJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updateRoleRequest()))
@@ -63,7 +63,7 @@ class AdminControllerTest {
     @Test
     void updateRoleNotAuthorize() throws Exception {
         this.mockMvc
-                .perform(patch("/api/v1/admin/role"))
+                .perform(patch("/admin/role"))
                 .andExpect(status().isForbidden());
     }
 
@@ -71,7 +71,7 @@ class AdminControllerTest {
     void updateRoleIsUser() throws Exception {
         String userJwtToken = objectCreator.userJwtToken();
         this.mockMvc
-                .perform(patch("/api/v1/admin/role")
+                .perform(patch("/admin/role")
                                 .header("Authorization", userJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updateRoleRequest()))
@@ -83,7 +83,7 @@ class AdminControllerTest {
     void updateRoleWithoutParam() throws Exception {
         String adminJwtToken = objectCreator.adminJwtToken();
         this.mockMvc
-                .perform(patch("/api/v1/admin/role")
+                .perform(patch("/admin/role")
                         .header("Authorization", adminJwtToken))
                 .andExpect(status().isBadRequest());
     }

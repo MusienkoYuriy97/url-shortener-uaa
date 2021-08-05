@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,7 @@ import static by.solbegsoft.urlshorteneruaa.util.UserRole.*;
 import static by.solbegsoft.urlshorteneruaa.util.UserStatus.*;
 
 @Component
+@PropertySource("classpath:constant.properties")
 public class ObjectCreator {
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -37,7 +39,7 @@ public class ObjectCreator {
     private UserRepository userRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-    @Value("${jwt.prefix}")
+    @Value("${JWT_PREFIX}")
     private String prefix;
 
     public UserCreateRequest userCreateRequest(){

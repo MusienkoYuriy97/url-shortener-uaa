@@ -39,7 +39,7 @@ class AuthenticationControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        post("/api/v1/auth/registration")
+                        post("/auth/registration")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.userCreateRequest()))
                 )
@@ -55,7 +55,7 @@ class AuthenticationControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        post("/api/v1/auth/registration")
+                        post("/auth/registration")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.userCreateRequest()))
                 )
@@ -65,7 +65,7 @@ class AuthenticationControllerTest {
     @Test
     void registrationWithoutParam() throws Exception {
         this.mockMvc
-                .perform(post("/api/v1/auth/registration"))
+                .perform(post("/auth/registration"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -76,7 +76,7 @@ class AuthenticationControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        post("/api/v1/auth/login")
+                        post("/auth/login")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.loginUserRequest()))
                 )
@@ -90,7 +90,7 @@ class AuthenticationControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        post("/api/v1/auth/login")
+                        post("/auth/login")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.loginUserRequest()))
                 )
@@ -104,7 +104,7 @@ class AuthenticationControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        post("/api/v1/auth/login")
+                        post("/auth/login")
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.loginUserRequest()))
                 )
@@ -114,7 +114,7 @@ class AuthenticationControllerTest {
     @Test
     void loginWithoutParam() throws Exception {
         this.mockMvc
-                .perform(post("/api/v1/auth/login"))
+                .perform(post("/auth/login"))
                 .andExpect(status().isBadRequest());
     }
 }

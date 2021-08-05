@@ -16,7 +16,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "${api.path}"+"/auth")
+@RequestMapping("/auth")
 @Tag(name = "AuthenticationController", description = "End points for login and registration new account")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;

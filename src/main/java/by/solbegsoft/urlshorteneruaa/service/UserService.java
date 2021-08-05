@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +25,14 @@ import static by.solbegsoft.urlshorteneruaa.util.UserStatus.*;
 
 @Slf4j
 @Service
+@PropertySource("classpath:constant.properties")
 public class UserService {
-    @Value("${jwt.secret}")
-    private String secretKey;
-    @Value("${jwt.claimSimpleKey}")
-    private String claimSimpleKey;
-    @Value("${jwt.claimExpiration}")
-    private String claimExpiration;
+    @Value("${JWT_SECRET}")
+    private String JWT_SECRET;
+    @Value("${JWT_CLAIM_SIMPLE_KEY}")
+    private String JWT_CLAIM_SIMPLE_KEY;
+    @Value("${JWT_CLAIM_EXPIRATION}")
+    private String JWT_CLAIM_EXPIRATION;
 
     private final UserRepository userRepository;
     private final ActivateKeyRepository activateKeyRepository;
@@ -80,8 +82,8 @@ public class UserService {
             throw new ActiveKeyNotValidException("Activate key cannot be null.");
         }
         Map<String, Object> claimsMap = getClaimsMap(jwtActivateKey);
-        String simpleKey = claimsMap.get(claimSimpleKey).toString();
-        Object expiration = claimsMap.get(claimExpiration);
+        String simpleKey = claimsMap.get(JWT_CLAIM_SIMPLE_KEY).toString();
+        Object expiration = claimsMap.get(JWT_CLAIM_EXPIRATION);
         if (isExpired(expiration)){
             log.warn("Activate key is expired");
             throw new ActiveKeyNotValidException("Activate key is expired");
@@ -101,8 +103,8 @@ public class UserService {
             throw new ActiveKeyNotValidException("Activate key cannot be null.");
         }
         Map<String, Object> claimsMap = getClaimsMap(jwtActivateKeyOld);
-        String simpleKeyOld = claimsMap.get(claimSimpleKey).toString();
-        Object expiration = claimsMap.get(claimExpiration);
+        String simpleKeyOld = claimsMap.get(JWT_CLAIM_SIMPLE_KEY).toString();
+        Object expiration = claimsMap.get(JWT_CLAIM_EXPIRATION);
         if (isExpired(expiration)){
             //get old activate key from database
             ActivateKey activateKeyOld = getActivateKeyOrThrowException(simpleKeyOld);
@@ -121,7 +123,7 @@ public class UserService {
     private Map<String, Object> getClaimsMap(String jwtKey){
         try {
             Jws<Claims> claimsJws = Jwts.parser()
-                    .setSigningKey(secretKey)
+                    .setSigningKey(JWT_SECRET)
                     .parseClaimsJws(jwtKey);
             return new HashMap<>(claimsJws.getBody());
         }catch (JwtException | IllegalArgumentException e){

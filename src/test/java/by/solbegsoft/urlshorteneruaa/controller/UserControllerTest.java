@@ -36,7 +36,7 @@ class UserControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        put("/api/v1/user/password")
+                        put("/user/password")
                                 .header("Authorization", userJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updatePasswordRequest()))
@@ -52,7 +52,7 @@ class UserControllerTest {
         //then
         this.mockMvc
                 .perform(
-                        put("/api/v1/user/password")
+                        put("/user/password")
                                 .header("Authorization", userJwtToken)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectCreator.toJson(objectCreator.updatePasswordRequest()))
@@ -64,7 +64,7 @@ class UserControllerTest {
     void updatePasswordWithoutParam() throws Exception {
         String userJwtToken = objectCreator.userJwtToken();
         this.mockMvc
-                .perform(put("/api/v1/user/password")
+                .perform(put("/user/password")
                         .header("Authorization", userJwtToken))
                 .andExpect(status().isBadRequest());
     }
@@ -72,7 +72,7 @@ class UserControllerTest {
     @Test
     void updatePasswordNotAuthorize() throws Exception {
         this.mockMvc
-                .perform(put("/api/v1/user/password"))
+                .perform(put("/user/password"))
                 .andExpect(status().isForbidden());
     }
 
@@ -82,7 +82,7 @@ class UserControllerTest {
         doNothing().when(userService).activate(any(String.class));
         //then
         this.mockMvc
-                .perform(get("/api/v1/user/activate/fgdfnglfdjbnjbnljnbDSFASBVcxzf131vvzcv"))
+                .perform(get("/user/activate/fgdfnglfdjbnjbnljnbDSFASBVcxzf131vvzcv"))
                 .andExpect(status().isAccepted());
     }
 
@@ -91,7 +91,7 @@ class UserControllerTest {
         doThrow(ActiveKeyNotValidException.class).when(userService).activate(any(String.class));
 
         this.mockMvc
-                .perform(get("/api/v1/user/activate/fgdfnglfdjbnjbnljnbDSFASBVcxzf131vvzcv"))
+                .perform(get("/user/activate/fgdfnglfdjbnjbnljnbDSFASBVcxzf131vvzcv"))
                 .andExpect(status().isConflict());
     }
 }

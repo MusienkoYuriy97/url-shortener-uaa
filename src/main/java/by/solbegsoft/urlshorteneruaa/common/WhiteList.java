@@ -1,33 +1,20 @@
 package by.solbegsoft.urlshorteneruaa.common;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.util.Set;
 
-@Component
-public class WhiteList implements InitializingBean {
-    @Value("${api.path}")
-    private String apiPath;
+public class WhiteList {
+    private static final Set<String> whiteList = Set.of(
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
+            "/configuration/ui",
+            "/swagger-ui/**",
+            "/auth/login",
+            "/url/redirect/**",
+            "/auth/registration",
+            "/user/activate/**"
+    );
 
-    private Set<String> whiteList;
-
-    @Override
-    public void afterPropertiesSet(){
-        whiteList = Set.of(
-                "/swagger-ui.html",
-                "/v3/api-docs/**",
-                "/configuration/ui",
-                "/swagger-ui/**",
-                apiPath + "/auth/login",
-                apiPath + "/url/redirect/**",
-                apiPath + "/auth/registration",
-                apiPath + "/user/activate/**"
-        );
-    }
-
-    public String[] get(){
+    public static String[] get(){
         return whiteList.toArray(new String[0]);
     }
 }
