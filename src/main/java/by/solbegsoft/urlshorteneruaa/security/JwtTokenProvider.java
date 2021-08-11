@@ -22,12 +22,18 @@ import java.util.Map;
 @PropertySource("classpath:constant.properties")
 public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
-    @Value("${JWT_SECRET}") private String secret;
-    @Value("${JWT_HEADER}") private String JWT_HEADER;
-    @Value("${JWT_PREFIX}") private String JWT_PREFIX;
-    @Value("${JWT_EXPIRATION}") private Long JWT_EXPIRATION;
-    @Value("${JWT_CLAIM_UUID}") private String JWT_CLAIM_UUID;
-    @Value("${JWT_CLAIM_ROLE}") private String JWT_CLAIM_ROLE;
+    @Value("${JWT_SECRET}")
+    private String JWT_SECRET;
+    @Value("${JWT_HEADER}")
+    private String JWT_HEADER;
+    @Value("${JWT_PREFIX}")
+    private String JWT_PREFIX;
+    @Value("${JWT_EXPIRATION}")
+    private Long JWT_EXPIRATION;
+    @Value("${JWT_CLAIM_UUID}")
+    private String JWT_CLAIM_UUID;
+    @Value("${JWT_CLAIM_ROLE}")
+    private String JWT_CLAIM_ROLE;
 
 
     public JwtTokenProvider(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
@@ -36,7 +42,7 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init(){
-        secret = Base64.getEncoder().encodeToString(secret.getBytes());
+        JWT_SECRET = Base64.getEncoder().encodeToString(JWT_SECRET.getBytes());
     }
 
     public Map<String, String> createToken(String userUuid, String email, String userRole){
@@ -49,7 +55,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
                 .compact();
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("access_token", access_token);
@@ -58,7 +64,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token){
         try {
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return !claimsJws.getBody().getExpiration().before(new Date());
         }catch (JwtException | IllegalArgumentException e){
             throw new JwtAuthenticationException("Jwt token is expired or invalid!", HttpStatus.UNAUTHORIZED);
@@ -73,7 +79,7 @@ public class JwtTokenProvider {
     public String getEmail(String bearerToken){
         String token = bearerToken.replace(JWT_PREFIX,"");
         return Jwts.parser()
-                .setSigningKey(secret)
+                .setSigningKey(JWT_SECRET)
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
